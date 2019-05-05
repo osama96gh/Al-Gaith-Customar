@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -37,11 +38,11 @@ public class SignUpActivity extends AppCompatActivity {
     private TextView mErrorContaner;
 
     ImageButton pickPersonalPhoto;
-    String base64Personal;
+    String base64Personal="";
     ImageButton pickIdFrontPhoto;
-    String base64Front;
+    String base64Front="";
     ImageButton pickIdBehindPhoto;
-    String base64Behind;
+    String base64Behind="";
 
     private UserSignUpTask mSignUpTask = null;
 
@@ -192,6 +193,7 @@ public class SignUpActivity extends AppCompatActivity {
             mErrorLayout.setVisibility(View.GONE);
             mProgressLayout.setVisibility(View.VISIBLE);
             super.onPreExecute();
+            Log.println(Log.ASSERT, "id photo", base64Behind + " " + base64Front);
         }
 
         @Override

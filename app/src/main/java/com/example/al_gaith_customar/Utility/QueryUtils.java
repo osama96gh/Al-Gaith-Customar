@@ -276,8 +276,6 @@ public final class QueryUtils {
         } catch (IOException e) {
             Log.println(Log.ASSERT, LOG_TAG, "Problem making the HTTP request." + e);
         }
-        Log.println(Log.ASSERT, "data:", jsonResponse);
-
         return jsonResponse;
     }
 

@@ -18,5 +18,7 @@ public class AppData {
     public static final String USER_NAME_KEY = "USER_NAME_KEY";
     public static final String USER_ID_KEY = "USER_ID_KEY";
     public static final String USER_PHOTO_KEY = "USER_PHOTO_KEY";
+    public static final String APPLICATION_ID_KEY = "APPLICATION_ID_KEY";
+    public static final String APPLICATION_TITLE_KEY = "APPLICATION_TITLE_KEY";
 
 }

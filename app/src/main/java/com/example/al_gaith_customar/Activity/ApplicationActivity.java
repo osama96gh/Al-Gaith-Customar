@@ -1,5 +1,6 @@
 package com.example.al_gaith_customar.Activity;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -19,8 +20,8 @@ public class ApplicationActivity extends AppCompatActivity implements Applicatio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_application);
-        SendApplication sendApplication = new SendApplication();
-        sendApplication.execute();
+//        SendApplication sendApplication = new SendApplication();
+//        sendApplication.execute();
         setFragment(ApplicationFragment.newInstance(1));
     }
 
@@ -32,20 +33,18 @@ public class ApplicationActivity extends AppCompatActivity implements Applicatio
 
     @Override
     public void onListFragmentInteraction(Application item) {
-
     }
 
     public void newApplication(View view) {
-
-    }
+        Intent intent = new Intent(ApplicationActivity.this, ApplicationTypeActivity.class);
+        startActivity(intent);
+     }
 
     class SendApplication extends AsyncTask<Void, Void, String> {
-
         @Override
         protected String doInBackground(Void... voids) {
             String resppon = GeneralUtility.sendApplication(ApplicationActivity.this, AppData.authType + AppData.userToken);
             return resppon;
         }
-
     }
 }

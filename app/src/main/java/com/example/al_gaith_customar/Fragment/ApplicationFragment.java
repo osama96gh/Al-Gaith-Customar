@@ -10,8 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Data.Application;
@@ -37,7 +37,7 @@ public class ApplicationFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
     ArrayList<Application> dataList = new ArrayList<>();
     MyApplicationRecyclerViewAdapter myApplicationRecyclerViewAdapter;
-
+    ProgressBar progressBar;
     RadioGroup sortRadioGroup;
 
     /**
@@ -45,6 +45,7 @@ public class ApplicationFragment extends Fragment {
      * fragment (e.g. upon screen orientation changes).
      */
     public ApplicationFragment() {
+
     }
 
     // TODO: Customize parameter initialization
@@ -67,10 +68,10 @@ public class ApplicationFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_application_list, container, false);
         View recycleView = view.findViewById(R.id.list);
+        progressBar = view.findViewById(R.id.progressBar_load_app);
         sortRadioGroup = view.findViewById(R.id.sort_app_rg);
         // Set the adapter
         if (recycleView instanceof RecyclerView) {
@@ -85,29 +86,33 @@ public class ApplicationFragment extends Fragment {
             recyclerView.setAdapter(myApplicationRecyclerViewAdapter);
         }
 
-        loadMyApplication loadMyApplication = new loadMyApplication();
+        LoadMyApplication loadMyApplication = new LoadMyApplication();
         loadMyApplication.execute();
         sortRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 int index = group.indexOfChild(group.findViewById(checkedId));
-                if (index == 0) {
-                    Collections.sort(dataList, new Comparator<Application>() {
-                        @Override
-                        public int compare(Application o1, Application o2) {
-                            return o1.app_name.compareTo(o2.app_name);
-                        }
-                    });
+                switch (index) {
+                    case 1:
+                        Collections.sort(dataList, new Comparator<Application>() {
+                            @Override
+                            public int compare(Application o1, Application o2) {
+                                return o1.app_name.compareTo(o2.app_name);
+                            }
+                        });
 
-                    notifyDataChange();
-                } else {
-                    Collections.sort(dataList, new Comparator<Application>() {
-                        @Override
-                        public int compare(Application o1, Application o2) {
-                            return o1.getDate().compareTo(o2.getDate());
-                        }
-                    });
-                    notifyDataChange();
+                        notifyDataChange();
+                        break;
+                    case 0:
+                        Collections.sort(dataList, new Comparator<Application>() {
+                            @Override
+                            public int compare(Application o1, Application o2) {
+                                return o2.getDate().compareTo(o1.getDate());
+                            }
+                        });
+                        notifyDataChange();
+                        break;
+
                 }
             }
         });
@@ -153,20 +158,33 @@ public class ApplicationFragment extends Fragment {
         void onListFragmentInteraction(Application item);
     }
 
-    class loadMyApplication extends AsyncTask<Void, Void, String> {
+    class LoadMyApplication extends AsyncTask<Void, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected String doInBackground(Void... voids) {
 
-            return GeneralUtility.getMyApplication(getContext(), AppData.authType + AppData.userToken);
+            return GeneralUtility.getMyApplicationData(getContext(), AppData.authType + AppData.userToken);
         }
 
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            progressBar.setVisibility(View.GONE);
+
             for (Application application : GeneralUtility.parseApplication(s)) {
                 dataList.add(application);
             }
+            Collections.sort(dataList, new Comparator<Application>() {
+                @Override
+                public int compare(Application o1, Application o2) {
+                    return o2.getDate().compareTo(o1.getDate());
+                }
+            });
             notifyDataChange();
         }
     }

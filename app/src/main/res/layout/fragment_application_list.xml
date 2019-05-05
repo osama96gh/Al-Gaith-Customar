@@ -9,6 +9,16 @@
 
     app:layoutManager="LinearLayoutManager">
 
+    <ProgressBar
+        android:id="@+id/progressBar_load_app"
+        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="5dp"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@+id/list" />
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
@@ -25,14 +35,29 @@
             android:fontFamily="@font/cairo"
             android:padding="4dp"
             android:text="فرز حسب:"
-            android:textColor="@color/colorAccent" />
+            android:textColor="@color/colorPrimaryDark" />
 
         <RadioGroup
             android:id="@+id/sort_app_rg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:checkedButton="@id/sort_by_date_rb"
             android:gravity="center"
             android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/sort_by_date_rb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/rb_background"
+                android:button="@android:color/transparent"
+                android:fontFamily="@font/tajawal"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="التاريخ"
+                android:textColor="@android:color/white" />
 
             <RadioButton
                 android:layout_width="wrap_content"
@@ -47,23 +72,12 @@
                 android:text="النوع"
                 android:textColor="@android:color/white" />
 
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
-                android:background="@drawable/rb_background"
-                android:button="@android:color/transparent"
-                android:fontFamily="@font/tajawal"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="التاريخ"
 
-                android:textColor="@android:color/white" />
         </RadioGroup>
     </LinearLayout>
 
     <View
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="6dp"
         android:background="@drawable/shadow"

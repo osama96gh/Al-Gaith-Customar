@@ -3,6 +3,7 @@ package com.example.al_gaith_customar.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.ImageViewCompat;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -54,21 +55,16 @@ public class MainActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        if (isLogIn) {
-
-        } else {
-
-        }
     }
 
     private void initilizeUserInfo() {
         userId.setText(AppData.userId);
         userName.setText(AppData.userName);
-        ImageViewCompat.setImageTintList(userPhoto, null);
-
-        Glide.with(this).load(AppData.userPhotoUrl).into(userPhoto);
-
-
+        Log.println(Log.ASSERT, "photo", AppData.userPhotoUrl);
+        if (!AppData.userPhotoUrl.matches("null")) {
+            ImageViewCompat.setImageTintList(userPhoto, null);
+            Glide.with(this).load(AppData.userPhotoUrl).into(userPhoto);
+        }
     }
 
     @Override
@@ -117,6 +113,7 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(this, "الطلبات", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(MainActivity.this, ApplicationActivity.class);
             startActivity(intent);
+
         } else if (id == R.id.nav_log_out) {
 
             GeneralUtility.deleteValue(AppData.USER_TOKEN_KEY, MainActivity.this);

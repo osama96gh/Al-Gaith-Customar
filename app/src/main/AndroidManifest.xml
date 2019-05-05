@@ -16,9 +16,13 @@
         android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".Activity.NewApplicationActivity"></activity>
+        <activity
+            android:name=".Activity.ApplicationTypeActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".Activity.ApplicationActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"></activity>
+            android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".Activity.SignUpActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

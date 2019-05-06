@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(this, "الطلبات", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(MainActivity.this, ApplicationActivity.class);
             startActivity(intent);
+            finish();
 
         } else if (id == R.id.nav_log_out) {
 

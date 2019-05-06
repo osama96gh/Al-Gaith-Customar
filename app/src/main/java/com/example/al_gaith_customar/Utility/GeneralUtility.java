@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Data.Application;
+import com.example.al_gaith_customar.Data.ApplicationField;
 import com.example.al_gaith_customar.Data.ApplicationType;
 import com.example.al_gaith_customar.Utility.QueryUtils;
 import com.google.gson.Gson;
@@ -100,60 +101,6 @@ public class GeneralUtility {
         return error;
     }
 
-
-    public static String sendApplication(Context context, String auth) {
-        Uri baseUri = Uri.parse(AppData.BASIC_URI + "/send/applications");
-        Uri.Builder uriBuilder = baseUri.buildUpon();
-        uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
-
-
-        String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
-        Log.println(Log.ASSERT, "send aplication respon", response);
-
-        String error = "خطأ في الاتصال بالخادم";
-
-//        JSONObject baseJsonResponse = null;
-//        try {
-//            baseJsonResponse = new JSONObject(response);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        if (baseJsonResponse != null) {
-//
-//
-//            try {
-//                JSONObject resultJsonObject = baseJsonResponse.getJSONObject("success");
-//                String token = resultJsonObject.getString("token");
-//                String name = resultJsonObject.getString("name");
-//                String id = resultJsonObject.getString("username");
-//                String photo = resultJsonObject.getString("profile_picture");
-//
-//                saveString(AppData.USER_TOKEN_KEY, token, context);
-//                saveString(AppData.USER_ID_KEY, id, context);
-//                saveString(AppData.USER_NAME_KEY, name, context);
-//                saveString(AppData.USER_PHOTO_KEY, photo, context);
-//                AppData.userToken = token;
-//                AppData.userName = name;
-//                AppData.userId = id;
-//                AppData.userPhotoUrl = photo;
-//
-//
-//                return "no error";
-//
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//            try {
-//                error = baseJsonResponse.getString("error");
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
-        return error;
-    }
-
     public static String getMyApplicationData(Context context, String auth) {
         Uri baseUri = Uri.parse(AppData.BASIC_URI + "/my/applications");
         Uri.Builder uriBuilder = baseUri.buildUpon();
@@ -176,6 +123,17 @@ public class GeneralUtility {
         String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
         Log.println(Log.ASSERT, "application type respon", response);
 
+        String error = "خطأ في الاتصال بالخادم";
+        return response;
+    }
+
+    public static String getApplicationFieldData(Context context, String auth, String id) {
+        Uri baseUri = Uri.parse(AppData.BASIC_URI + "/send/applications/data");
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendQueryParameter("id", id);
+        uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
+        String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
+        Log.println(Log.ASSERT, "app field response", response);
         String error = "خطأ في الاتصال بالخادم";
         return response;
     }
@@ -236,6 +194,37 @@ public class GeneralUtility {
                 try {
                     ApplicationType applicationType = gson.fromJson(contentJsonArry.getJSONObject(i).toString(), ApplicationType.class);
                     appList.add(applicationType);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return appList;
+    }
+
+    public static ArrayList<ApplicationField> parseApplicationField(String applicationFieldJSON) {
+        ArrayList<ApplicationField> appList = new ArrayList<>();
+
+        JSONObject baseJsonResponse = null;
+        try {
+            baseJsonResponse = new JSONObject(applicationFieldJSON);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONArray contentJsonArry = null;
+        if (baseJsonResponse != null) {
+            try {
+                contentJsonArry = baseJsonResponse.getJSONArray("success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if (contentJsonArry != null) {
+            Gson gson = new Gson();
+            for (int i = 0; i < contentJsonArry.length(); i++) {
+                try {
+                    ApplicationField applicationField = gson.fromJson(contentJsonArry.getJSONObject(i).toString(), ApplicationField.class);
+                    appList.add(applicationField);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

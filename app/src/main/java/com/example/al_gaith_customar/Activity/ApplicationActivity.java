@@ -38,13 +38,6 @@ public class ApplicationActivity extends AppCompatActivity implements Applicatio
     public void newApplication(View view) {
         Intent intent = new Intent(ApplicationActivity.this, ApplicationTypeActivity.class);
         startActivity(intent);
+        finish();
      }
-
-    class SendApplication extends AsyncTask<Void, Void, String> {
-        @Override
-        protected String doInBackground(Void... voids) {
-            String resppon = GeneralUtility.sendApplication(ApplicationActivity.this, AppData.authType + AppData.userToken);
-            return resppon;
-        }
-    }
 }

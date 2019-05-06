@@ -32,5 +32,6 @@ public class ApplicationTypeActivity extends AppCompatActivity implements Applic
         intent.putExtra(AppData.APPLICATION_ID_KEY, item.id);
         intent.putExtra(AppData.APPLICATION_TITLE_KEY, item.name);
         startActivity(intent);
+       finish();
     }
 }

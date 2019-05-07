@@ -6,12 +6,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -27,18 +25,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.al_gaith_customar.Data.AppData;
+import com.example.al_gaith_customar.Data.ApplicationData;
 import com.example.al_gaith_customar.Data.ApplicationField;
 import com.example.al_gaith_customar.R;
 import com.example.al_gaith_customar.Utility.GeneralUtility;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
+
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class NewApplicationActivity extends AppCompatActivity {
     int appId = 0;
     Toolbar toolbar;
-    ArrayList<ApplicationField> dataList = new ArrayList<>();
-    HashMap<Integer, ApplicationField> dataHash = new HashMap<>();
+    ArrayList<ApplicationField> fieldList = new ArrayList<>();
+    ArrayList<ApplicationData> dataList = new ArrayList<>();
 
     LinearLayout rootView;
 
@@ -58,37 +61,50 @@ public class NewApplicationActivity extends AppCompatActivity {
 
     private void addEnumField(final ApplicationField applicationField) {
         //RadioButtons are always added inside a RadioGroup
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4));
         LinearLayout linearLayout = new LinearLayout(NewApplicationActivity.this);
+        linearLayout.setLayoutParams(params);
+        linearLayout.setPadding(convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4));
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setId(applicationField.id);
-
+        linearLayout.setBackground(getResources().getDrawable(R.drawable.fram_primary));
         TextView titleTV = new TextView(this);
         titleTV.setText(applicationField.field_name);
         RadioGroup radioGroup = new RadioGroup(this);
-        radioGroup.setOrientation(LinearLayout.HORIZONTAL);
+
+        radioGroup.setOrientation(LinearLayout.VERTICAL);
 
         linearLayout.addView(titleTV);
         linearLayout.addView(radioGroup);
-        linearLayout.setBackgroundColor(getResources().getColor(android.R.color.transparent));
         rootView.addView(linearLayout);
-        for (String choice : applicationField.enum_values) {
-            RadioButton radioButton = new RadioButton(this);
-            radioButton.setText(choice);
-            radioGroup.addView(radioButton);
-            // setRadioButtonAttributes(radioButton);
-        }
+        if (applicationField.enum_values != null)
+            for (String choice : applicationField.enum_values) {
+                RadioButton radioButton = new RadioButton(this);
+                radioButton.setText(choice);
+                radioGroup.addView(radioButton);
+                // setRadioButtonAttributes(radioButton);
+            }
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton radioButton = group.findViewById(checkedId);
                 String choise = (String) radioButton.getText();
-                if (choise.matches(applicationField.positive_value)) {
-                    for (int id : applicationField.children) {
-                        rootView.findViewById(id).setVisibility(View.VISIBLE);
+                if (applicationField.children != null) {
+                    if (choise.matches(applicationField.positive_value)) {
+                        for (int id : applicationField.children) {
+                            rootView.findViewById(id).setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        for (int id : applicationField.children) {
+                            rootView.findViewById(id).setVisibility(View.GONE);
+                        }
                     }
-                } else {
-                    for (int id : applicationField.children) {
-                        rootView.findViewById(id).setVisibility(View.GONE);
+                }
+                for (int i = 0; i < dataList.size(); i++) {
+                    if (dataList.get(i).field_id == applicationField.id) {
+                        dataList.get(i).value = choise;
                     }
                 }
 
@@ -99,11 +115,15 @@ public class NewApplicationActivity extends AppCompatActivity {
 
 
     private void addTextField(ApplicationField applicationField) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4));
         TextInputLayout editTextLayout = new TextInputLayout(this);
+        editTextLayout.setPadding(convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4));
+        editTextLayout.setLayoutParams(params);
         editTextLayout.setId(applicationField.id);
-
+        editTextLayout.setBackground(getResources().getDrawable(R.drawable.fram_primary));
         rootView.addView(editTextLayout);
-
 
         EditText editText = new EditText(this);
         editText.setHint(applicationField.field_name);
@@ -122,7 +142,7 @@ public class NewApplicationActivity extends AppCompatActivity {
         TextView titleTV = new TextView(this);
         titleTV.setText(applicationField.field_name);
         ImageView imageView = new ImageView(this);
-        imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_a_photo));
+        imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_photo));
         imageView.setBackground(getResources().getDrawable(R.drawable.fram_primary));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -181,7 +201,7 @@ public class NewApplicationActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 1: {
 
@@ -205,6 +225,39 @@ public class NewApplicationActivity extends AppCompatActivity {
         }
     }
 
+    public void sendApplication(View view) {
+        SendApplicationData sendApplicationData = new SendApplicationData();
+        sendApplicationData.execute();
+    }
+
+    void updateData() {
+        for (int i = 0; i < dataList.size(); i++) {
+            ApplicationData applicationData = dataList.get(i);
+            if (applicationData.type.matches("text")) {
+                TextInputLayout textInputLayout = rootView.findViewById(applicationData.field_id);
+                String value = String.valueOf(textInputLayout.getEditText().getText());
+                dataList.get(i).value = value;
+            }
+
+        }
+    }
+
+    String getDataAsJSONArray() {
+        Gson gson = new Gson();
+        JsonElement element = gson.toJsonTree(dataList, new TypeToken<ArrayList<ApplicationData>>() {
+        }.getType());
+        if (!element.isJsonArray()) {
+// fail appropriately
+            Log.println(Log.ASSERT, "error", "error convert list to json");
+        }
+
+        JsonArray jsonArray = element.getAsJsonArray();
+
+
+        Log.println(Log.ASSERT, "array", "" + jsonArray.toString());
+        return jsonArray.toString();
+    }
+
     class LoadApplicationFields extends AsyncTask<Void, Void, String> {
         @Override
         protected void onPreExecute() {
@@ -220,26 +273,45 @@ public class NewApplicationActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
 
-            dataList = GeneralUtility.parseApplicationField(s);
-            for (ApplicationField applicationField : dataList) {
-                dataHash.put(applicationField.id, applicationField);
+            fieldList = GeneralUtility.parseApplicationField(s);
+            for (ApplicationField applicationField : fieldList) {
+                dataList.add(new ApplicationData(applicationField.id, applicationField.field_type));
 
                 if (applicationField.field_type.matches("enum")) {
                     addEnumField(applicationField);
-                } else if (applicationField.field_type.matches("text")) {
+                } else if (applicationField.field_type.matches("text") || applicationField.field_type.matches("number")) {
                     addTextField(applicationField);
                 } else if (applicationField.field_type.matches("file")) {
                     addFileField(applicationField);
                 }
             }
 
-            for (ApplicationField applicationField : dataList) {
+            for (ApplicationField applicationField : fieldList) {
                 if (applicationField.children != null) {
                     for (int i : applicationField.children) {
                         rootView.findViewById(i).setVisibility(View.GONE);
                     }
                 }
             }
+        }
+    }
+
+    class SendApplicationData extends AsyncTask<Void, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            updateData();
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            return GeneralUtility.sendApplicationData(NewApplicationActivity.this, AppData.authType + AppData.userToken, "" + appId, getDataAsJSONArray());
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
         }
     }
 
@@ -253,12 +325,17 @@ public class NewApplicationActivity extends AppCompatActivity {
 
             imageUri = data.getData();
             imageBitMap = GeneralUtility.getImageFromUri(NewApplicationActivity.this, imageUri);
-//            base64Behind = GeneralUtility.getBase64(imageBitMap);
+            String base64 = GeneralUtility.getBase64(imageBitMap);
+            for (int i = 0; i < dataList.size(); i++) {
+                if (dataList.get(i).field_id == requestCode) {
+                    dataList.get(i).value = base64;
+                    break;
+                }
+            }
 //            pickIdBehindPhoto.setImageBitmap(imageBitMap);
 //            pickIdBehindPhoto.setColorFilter(null);
 //            ImageViewCompat.setImageTintList(pickIdBehindPhoto, null);
             ((ImageView) (((LinearLayout) rootView.findViewById(requestCode)).getChildAt(1))).setImageBitmap(imageBitMap);
-
         }
     }
 }

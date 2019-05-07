@@ -17,7 +17,7 @@ public class ApplicationTypeActivity extends AppCompatActivity implements Applic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_application_type);
-        setFragment(ApplicationTypeFragment.newInstance(1));
+        setFragment(ApplicationTypeFragment.newInstance(2));
     }
 
     protected void setFragment(Fragment fragment) {

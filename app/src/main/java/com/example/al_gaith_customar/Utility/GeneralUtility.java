@@ -138,6 +138,18 @@ public class GeneralUtility {
         return response;
     }
 
+    public static String sendApplicationData(Context context, String auth, String id, String data) {
+        Uri baseUri = Uri.parse(AppData.BASIC_URI + "/get/applications/data");
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
+        uriBuilder.appendQueryParameter("name_id", id);
+        uriBuilder.appendQueryParameter("data", data);
+        String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
+        Log.println(Log.ASSERT, "send app response", response);
+        String error = "خطأ في الاتصال بالخادم";
+        return response;
+    }
+
     public static ArrayList<Application> parseApplication(String applicationJSON) {
         ArrayList<Application> appList = new ArrayList<>();
 

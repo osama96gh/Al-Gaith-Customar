@@ -144,7 +144,7 @@
                 android:maxHeight="250dp"
                 android:onClick="pickPersonalPhoto"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_add_a_photo"
+                android:src="@drawable/ic_add_photo"
                 android:tint="@color/colorAccent" />
 
             <TextView
@@ -167,7 +167,7 @@
                 android:maxHeight="250dp"
                 android:onClick="pickIdFrontPhoto"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_add_a_photo"
+                android:src="@drawable/ic_add_photo"
                 android:tint="@color/colorAccent" />
 
 
@@ -192,7 +192,7 @@
                 android:maxHeight="250dp"
                 android:onClick="pickIdBehindPhoto"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_add_a_photo"
+                android:src="@drawable/ic_add_photo"
 
                 android:tint="@color/colorAccent" />
 

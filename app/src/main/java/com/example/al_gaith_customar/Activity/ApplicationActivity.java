@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Data.Application;
@@ -33,11 +34,16 @@ public class ApplicationActivity extends AppCompatActivity implements Applicatio
 
     @Override
     public void onListFragmentInteraction(Application item) {
+        Toast.makeText(this, "" + item.id, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(ApplicationActivity.this, AppllicationDetailsActivity.class);
+        intent.putExtra(AppData.APPLICATION_ID_KEY, item.id);
+        startActivity(intent);
+        finish();
     }
 
     public void newApplication(View view) {
         Intent intent = new Intent(ApplicationActivity.this, ApplicationTypeActivity.class);
         startActivity(intent);
         finish();
-     }
+    }
 }

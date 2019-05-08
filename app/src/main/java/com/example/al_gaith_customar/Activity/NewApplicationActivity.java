@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,6 +37,8 @@ import com.google.gson.reflect.TypeToken;
 
 
 import java.util.ArrayList;
+
+import static android.view.Gravity.CENTER;
 
 public class NewApplicationActivity extends AppCompatActivity {
     int appId = 0;
@@ -133,9 +136,31 @@ public class NewApplicationActivity extends AppCompatActivity {
         //addLineSeperator();
     }
 
-    private void addFileField(final ApplicationField applicationField) {
+    private void addTextField(ApplicationField applicationField, LinearLayout parentView) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4));
+        TextInputLayout editTextLayout = new TextInputLayout(this);
+        editTextLayout.setPadding(convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4));
+        editTextLayout.setLayoutParams(params);
+        //editTextLayout.setId(id);
+        editTextLayout.setBackground(getResources().getDrawable(R.drawable.fram_primary));
+        parentView.addView(editTextLayout);
+
+        EditText editText = new EditText(this);
+        editText.setHint(applicationField.field_name);
+        // setEditTextAttributes(editText);
+        editTextLayout.addView(editText);
+
+        //addLineSeperator();
+    }
+
+    private void addImageField(final ApplicationField applicationField) {
         //RadioButtons are always added inside a RadioGroup
         LinearLayout linearLayout = new LinearLayout(NewApplicationActivity.this);
+        linearLayout.setPadding(convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4));
+        linearLayout.setLayoutParams(getDefaultParam(4));
+        linearLayout.setBackground(getResources().getDrawable(R.drawable.fram_primary));
         linearLayout.setId(applicationField.id);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -143,7 +168,6 @@ public class NewApplicationActivity extends AppCompatActivity {
         titleTV.setText(applicationField.field_name);
         ImageView imageView = new ImageView(this);
         imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_photo));
-        imageView.setBackground(getResources().getDrawable(R.drawable.fram_primary));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 convertDpToPixel(250));
@@ -157,22 +181,56 @@ public class NewApplicationActivity extends AppCompatActivity {
                 pickImage(applicationField.id);
             }
         });
-        linearLayout.setBackgroundColor(getResources().getColor(android.R.color.transparent));
         rootView.addView(linearLayout);
 
         //addLineSeperator();
     }
 
-//    private void addLineSeperator(int id) {
-//        LinearLayout lineLayout = new LinearLayout(this);
-//        lineLayout.setBackgroundColor(Color.GRAY);
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                2);
-//        params.setMargins(0, convertDpToPixel(10), 0, convertDpToPixel(10));
-//        lineLayout.setLayoutParams(params);
-//        rootView.addView(lineLayout);
-//    }
+    private void addMultibleField(final ApplicationField applicationField) {
+
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setLayoutParams(getDefaultParam(4));
+        linearLayout.setPadding(convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4));
+        linearLayout.setId(applicationField.id);
+        linearLayout.setBackground(getResources().getDrawable(R.drawable.fram_primary));
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        final LinearLayout container = new LinearLayout(this);
+
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setLayoutParams(getDefaultParam(4));
+        Button addButton = new Button(this);
+        addButton.setLayoutParams(getDefaultParam(4));
+        addButton.setText("إضافة");
+        TextView titleTV = new TextView(this);
+        titleTV.setText(applicationField.field_name);
+        addButton.setGravity(CENTER);
+        linearLayout.addView(titleTV);
+        linearLayout.addView(container);
+        linearLayout.addView(addButton);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int id : applicationField.children) {
+                    for (ApplicationField appField : fieldList) {
+                        if (appField.id == id) {
+                            if (appField.field_type.matches("text")) {
+                                addTextField(appField, container);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        rootView.addView(linearLayout);
+
+    }
+
+    LinearLayout.LayoutParams getDefaultParam(float marging) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(convertDpToPixel(marging), convertDpToPixel(marging), convertDpToPixel(marging), convertDpToPixel(marging));
+        return params;
+    }
 
     //This function to convert DPs to pixels
     private int convertDpToPixel(float dp) {
@@ -230,15 +288,50 @@ public class NewApplicationActivity extends AppCompatActivity {
         sendApplicationData.execute();
     }
 
-    void updateData() {
-        for (int i = 0; i < dataList.size(); i++) {
-            ApplicationData applicationData = dataList.get(i);
-            if (applicationData.type.matches("text")) {
-                TextInputLayout textInputLayout = rootView.findViewById(applicationData.field_id);
-                String value = String.valueOf(textInputLayout.getEditText().getText());
-                dataList.get(i).value = value;
-            }
+    String getTextFromTextInputLayout(TextInputLayout textInputLayout) {
+        String value = String.valueOf(textInputLayout.getEditText().getText());
+        return value;
+    }
 
+    int[] getChildrenId(int id) {
+        for (ApplicationField applicationField : fieldList) {
+            if (applicationField.id == id) {
+                return applicationField.children;
+            }
+        }
+        return null;
+    }
+
+    ApplicationField getField(int id) {
+        for (ApplicationField applicationField : fieldList) {
+            if (applicationField.id == id) {
+                return applicationField;
+            }
+        }
+        return null;
+    }
+
+    void updateData() {
+        int size = dataList.size();
+        for (int i = 0; i < size; i++) {
+            ApplicationData applicationData = dataList.get(i);
+            if (applicationData.field_type.matches("text")) {
+                TextInputLayout textInputLayout = rootView.findViewById(applicationData.field_id);
+                dataList.get(i).value = getTextFromTextInputLayout(textInputLayout);
+            } else if (applicationData.field_type.matches("button")) {
+                int[] childrenID = getChildrenId(applicationData.field_id);
+                LinearLayout continer1 = rootView.findViewById(applicationData.field_id);
+                LinearLayout mainContainer = (LinearLayout) continer1.getChildAt(1);
+                int elementCont = mainContainer.getChildCount();
+                for (int j = 0; j < elementCont; j++) {
+                    TextInputLayout textInputLayout = (TextInputLayout) mainContainer.getChildAt(j);
+                    ApplicationField applicationField = getField(childrenID[j % childrenID.length]);
+                    ApplicationData data = new ApplicationData(applicationField.id, applicationField.field_type);
+                    data.value = getTextFromTextInputLayout(textInputLayout);
+                    Log.println(Log.ASSERT, "text", getTextFromTextInputLayout(textInputLayout));
+                    dataList.add(data);
+                }
+            }
         }
     }
 
@@ -247,7 +340,7 @@ public class NewApplicationActivity extends AppCompatActivity {
         JsonElement element = gson.toJsonTree(dataList, new TypeToken<ArrayList<ApplicationData>>() {
         }.getType());
         if (!element.isJsonArray()) {
-// fail appropriately
+            // fail appropriately
             Log.println(Log.ASSERT, "error", "error convert list to json");
         }
 
@@ -281,8 +374,10 @@ public class NewApplicationActivity extends AppCompatActivity {
                     addEnumField(applicationField);
                 } else if (applicationField.field_type.matches("text") || applicationField.field_type.matches("number")) {
                     addTextField(applicationField);
-                } else if (applicationField.field_type.matches("file")) {
-                    addFileField(applicationField);
+                } else if (applicationField.field_type.matches("image")) {
+                    addImageField(applicationField);
+                } else if (applicationField.field_type.matches("button")) {
+                    addMultibleField(applicationField);
                 }
             }
 
@@ -305,6 +400,7 @@ public class NewApplicationActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Void... voids) {
+
             return GeneralUtility.sendApplicationData(NewApplicationActivity.this, AppData.authType + AppData.userToken, "" + appId, getDataAsJSONArray());
         }
 
@@ -332,6 +428,7 @@ public class NewApplicationActivity extends AppCompatActivity {
                     break;
                 }
             }
+
 //            pickIdBehindPhoto.setImageBitmap(imageBitMap);
 //            pickIdBehindPhoto.setColorFilter(null);
 //            ImageViewCompat.setImageTintList(pickIdBehindPhoto, null);

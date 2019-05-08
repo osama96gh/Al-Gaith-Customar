@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Data.Application;
+import com.example.al_gaith_customar.Data.ApplicationData;
 import com.example.al_gaith_customar.Data.ApplicationField;
 import com.example.al_gaith_customar.Data.ApplicationType;
 import com.example.al_gaith_customar.Utility.QueryUtils;
@@ -138,6 +139,17 @@ public class GeneralUtility {
         return response;
     }
 
+    public static String getApplicationDetailsData(Context context, String auth, String id) {
+        Uri baseUri = Uri.parse(AppData.BASIC_URI + "/my/application");
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendQueryParameter("app_id", id);
+        uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
+        String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
+        Log.println(Log.ASSERT, "app details response", response);
+        String error = "خطأ في الاتصال بالخادم";
+        return response;
+    }
+
     public static String sendApplicationData(Context context, String auth, String id, String data) {
         Uri baseUri = Uri.parse(AppData.BASIC_URI + "/get/applications/data");
         Uri.Builder uriBuilder = baseUri.buildUpon();
@@ -237,6 +249,45 @@ public class GeneralUtility {
                 try {
                     ApplicationField applicationField = gson.fromJson(contentJsonArry.getJSONObject(i).toString(), ApplicationField.class);
                     appList.add(applicationField);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return appList;
+    }
+
+    public static ArrayList<ApplicationData> parseApplicationData(String applicationFieldJSON) {
+        ArrayList<ApplicationData> appList = new ArrayList<>();
+
+        JSONObject baseJsonResponse = null;
+        try {
+            baseJsonResponse = new JSONObject(applicationFieldJSON);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject jsonObject = null;
+        if (baseJsonResponse != null) {
+            try {
+                jsonObject = baseJsonResponse.getJSONObject("success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        JSONArray contentJsonArry = null;
+        if (jsonObject != null) {
+            try {
+                contentJsonArry = jsonObject.getJSONArray("data");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if (contentJsonArry != null) {
+            Gson gson = new Gson();
+            for (int i = 0; i < contentJsonArry.length(); i++) {
+                try {
+                    ApplicationData applicationData = gson.fromJson(contentJsonArry.getJSONObject(i).toString(), ApplicationData.class);
+                    appList.add(applicationData);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

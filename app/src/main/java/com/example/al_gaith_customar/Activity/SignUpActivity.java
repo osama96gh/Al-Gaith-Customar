@@ -223,15 +223,10 @@ public class SignUpActivity extends AppCompatActivity {
             mProgressLayout.setVisibility(View.GONE);
 
             if (response.matches("no error")) {
-                if (base64Behind == null || base64Front == null) {
-                    mErrorLayout.setVisibility(View.VISIBLE);
-                    mErrorContaner.setText("تأكد من إدخال صورة الهوية للوجهين");
-                } else {
+
                     Intent intent = new Intent(SignUpActivity.this, SplachActivity.class);
                     startActivity(intent);
                     finish();
-
-                }
 
             } else {
                 mErrorLayout.setVisibility(View.VISIBLE);

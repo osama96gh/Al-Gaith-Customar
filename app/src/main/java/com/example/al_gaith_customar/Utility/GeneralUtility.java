@@ -15,6 +15,7 @@ import com.example.al_gaith_customar.Data.Application;
 import com.example.al_gaith_customar.Data.ApplicationData;
 import com.example.al_gaith_customar.Data.ApplicationField;
 import com.example.al_gaith_customar.Data.ApplicationType;
+import com.example.al_gaith_customar.Data.Massage;
 import com.example.al_gaith_customar.Utility.QueryUtils;
 import com.google.gson.Gson;
 
@@ -29,6 +30,45 @@ import java.util.Comparator;
 import static android.content.Context.MODE_PRIVATE;
 
 public class GeneralUtility {
+
+
+    public static String getSuccessMassage(String json) {
+        String massage = null;
+        JSONObject baseJsonObject = null;
+        try {
+            baseJsonObject = new JSONObject(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (baseJsonObject != null) {
+            try {
+                massage = baseJsonObject.getString("success_message");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return massage;
+    }
+
+    public static String getErrorMassage(String json) {
+        String massage = null;
+        JSONObject baseJsonObject = null;
+        try {
+            baseJsonObject = new JSONObject(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (baseJsonObject != null) {
+            try {
+                massage = baseJsonObject.getString("error_massage");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return massage;
+    }
 
     public static void saveString(String key, String data, Context context) {
         SharedPreferences prefs = context.getSharedPreferences(AppData.PUBLIC_SHARED_PREFERENCE_NAME, MODE_PRIVATE);
@@ -115,6 +155,19 @@ public class GeneralUtility {
         return response;
     }
 
+    public static String getMyMassagesData(Context context, String auth) {
+        Uri baseUri = Uri.parse(AppData.BASIC_URI + "/messages");
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
+
+
+        String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
+        Log.println(Log.ASSERT, "get massage respon", response);
+
+        String error = "خطأ في الاتصال بالخادم";
+        return response;
+    }
+
     public static String getApplicationTypeData(Context context, String auth) {
         Uri baseUri = Uri.parse(AppData.BASIC_URI + "/send/applications");
         Uri.Builder uriBuilder = baseUri.buildUpon();
@@ -158,8 +211,22 @@ public class GeneralUtility {
         uriBuilder.appendQueryParameter("data", data);
         String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
         Log.println(Log.ASSERT, "send app response", response);
-        String error = "خطأ في الاتصال بالخادم";
-        return response;
+        String result = null;
+        result = getSuccessMassage(response);
+        return result;
+    }
+
+    public static String sendMassageData(Context context, String auth, String massageType, String massage) {
+        Uri baseUri = Uri.parse(AppData.BASIC_URI + "/messages/store");
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
+        uriBuilder.appendQueryParameter("message_type", massageType);
+        uriBuilder.appendQueryParameter("message", massage);
+        String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
+        Log.println(Log.ASSERT, "send massage response", response);
+        String result = null;
+        result = getSuccessMassage(response);
+        return result;
     }
 
     public static ArrayList<Application> parseApplication(String applicationJSON) {
@@ -186,6 +253,48 @@ public class GeneralUtility {
                 try {
                     Application application = gson.fromJson(contentJsonArry.getJSONObject(i).toString(), Application.class);
                     appList.add(application);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return appList;
+    }
+
+    public static ArrayList<Massage> parseMassage(String massageJSON) {
+        ArrayList<Massage> appList = new ArrayList<>();
+
+        JSONObject baseJsonResponse = null;
+        try {
+            baseJsonResponse = new JSONObject(massageJSON);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject contentJsonObject = null;
+        if (baseJsonResponse != null) {
+            try {
+                contentJsonObject = baseJsonResponse.getJSONObject("success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        JSONArray contentJsonArry = null;
+        if (contentJsonObject != null) {
+
+            try {
+                contentJsonArry = contentJsonObject.getJSONArray("messages");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if (contentJsonArry != null) {
+            Gson gson = new Gson();
+            for (int i = 0; i < contentJsonArry.length(); i++) {
+                try {
+                    Massage massage = gson.fromJson(contentJsonArry.getJSONObject(i).toString(), Massage.class);
+                    appList.add(massage);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -355,6 +464,7 @@ public class GeneralUtility {
         }
         return error;
     }
+
 
     public static Bitmap getImageFromUri(Context context, Uri uri) {
         String[] filePathColumn = {MediaStore.Images.Media.DATA};

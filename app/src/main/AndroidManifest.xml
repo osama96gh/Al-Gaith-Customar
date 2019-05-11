@@ -16,8 +16,16 @@
         android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".Activity.AppllicationDetailsActivity"></activity>
-        <activity android:name=".Activity.NewApplicationActivity" />
+        <activity android:name=".Activity.NewMassageActivity"></activity>
+        <activity
+            android:name=".Activity.MassagesActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity
+            android:name=".Activity.AppllicationDetailsActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity
+            android:name=".Activity.NewApplicationActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".Activity.ApplicationTypeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />

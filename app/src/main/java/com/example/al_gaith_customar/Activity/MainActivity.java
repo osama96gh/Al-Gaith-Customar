@@ -107,13 +107,15 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_massages) {
-            Toast.makeText(this, "الرسائل", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, MassagesActivity.class);
+            startActivity(intent);
+           // finish();
         } else if (id == R.id.nav_requests) {
 
             Toast.makeText(this, "الطلبات", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(MainActivity.this, ApplicationActivity.class);
             startActivity(intent);
-            finish();
+         //   finish();
 
         } else if (id == R.id.nav_log_out) {
 

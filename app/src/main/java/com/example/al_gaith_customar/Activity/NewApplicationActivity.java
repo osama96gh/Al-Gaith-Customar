@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -47,18 +48,29 @@ public class NewApplicationActivity extends AppCompatActivity {
     ArrayList<ApplicationData> dataList = new ArrayList<>();
 
     LinearLayout rootView;
+    LinearLayout errorLayout;
+    TextView errorTV;
+    ProgressBar uploadPB;
+    ProgressBar loadPB;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_application);
         rootView = findViewById(R.id.application_field_root);
+        errorLayout = findViewById(R.id.error_ll);
+        errorTV = findViewById(R.id.error_tv);
+        loadPB = findViewById(R.id.load_progress_pb);
+        uploadPB = findViewById(R.id.upload_progress_layout);
+
         appId = getIntent().getIntExtra(AppData.APPLICATION_ID_KEY, 0);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getIntent().getStringExtra(AppData.APPLICATION_TITLE_KEY));
         LoadApplicationFields loadApplicationFields = new LoadApplicationFields();
         loadApplicationFields.execute();
+
     }
 
 
@@ -355,6 +367,7 @@ public class NewApplicationActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            loadPB.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -365,6 +378,7 @@ public class NewApplicationActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            loadPB.setVisibility(View.GONE);
 
             fieldList = GeneralUtility.parseApplicationField(s);
             for (ApplicationField applicationField : fieldList) {
@@ -396,6 +410,7 @@ public class NewApplicationActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             updateData();
+            uploadPB.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -407,6 +422,15 @@ public class NewApplicationActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            uploadPB.setVisibility(View.GONE);
+            if (s != null) {
+                Toast.makeText(NewApplicationActivity.this, s, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(NewApplicationActivity.this, ApplicationActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(NewApplicationActivity.this, "حصل خطأ ما", Toast.LENGTH_LONG).show();
+            }
 
         }
     }

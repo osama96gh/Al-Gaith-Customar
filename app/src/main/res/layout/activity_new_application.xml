@@ -42,6 +42,17 @@
             android:paddingLeft="8dp"
             android:paddingRight="8dp">
 
+            <include layout="@layout/company_logo" />
+
+
+            <ProgressBar
+                android:id="@+id/load_progress_pb"
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/application_field_root"
                 android:layout_width="match_parent"
@@ -49,27 +60,59 @@
                 android:layout_weight="1"
                 android:orientation="vertical" />
 
-            <View
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="75dp"/>
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/error_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:gravity="center"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_error"
+                        android:tint="@color/colorError" />
+
+                    <TextView
+                        android:id="@+id/error_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/tajawal"
+                        android:padding="4dp"
+                        android:textColor="@color/colorError"
+                        tools:text="حدث خطأ ما " />
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/upload_progress_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:indeterminate="true"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:background="@drawable/primary_rectangle"
+                android:onClick="sendApplication"
+                android:text="تقديم الطلب"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
         </LinearLayout>
     </ScrollView>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/primary_rectangle"
-        android:onClick="sendApplication"
-        android:text="تقديم الطلب"
-        android:textColor="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

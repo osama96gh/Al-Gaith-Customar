@@ -2,6 +2,8 @@ package com.example.al_gaith_customar.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.ImageViewCompat;
 import android.util.Log;
 import android.view.View;
@@ -18,12 +20,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.al_gaith_customar.Data.Announcement;
 import com.example.al_gaith_customar.Data.AppData;
+import com.example.al_gaith_customar.Fragment.AnnouncementFragment;
 import com.example.al_gaith_customar.R;
 import com.example.al_gaith_customar.Utility.GeneralUtility;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AnnouncementFragment.OnListFragmentInteractionListener {
     Boolean isLogIn = false;
 
     ImageView userPhoto;
@@ -55,6 +59,14 @@ public class MainActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
 
+        setAnnouncmentFragment(AnnouncementFragment.newInstance(1));
+
+    }
+
+    protected void setAnnouncmentFragment(Fragment fragment) {
+        FragmentTransaction t = getSupportFragmentManager().beginTransaction();
+        t.replace(R.id.annoument_container, fragment);
+        t.commit();
     }
 
     private void initilizeUserInfo() {
@@ -109,13 +121,19 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_massages) {
             Intent intent = new Intent(this, MassagesActivity.class);
             startActivity(intent);
-           // finish();
+            // finish();
         } else if (id == R.id.nav_requests) {
 
             Toast.makeText(this, "الطلبات", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(MainActivity.this, ApplicationActivity.class);
             startActivity(intent);
-         //   finish();
+            //   finish();
+
+        } else if (id == R.id.nav_dates) {
+
+            Intent intent = new Intent(MainActivity.this, DatesActivity.class);
+            startActivity(intent);
+            //   finish();
 
         } else if (id == R.id.nav_log_out) {
 
@@ -132,4 +150,8 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    @Override
+    public void onListFragmentInteraction(Announcement item) {
+
+    }
 }

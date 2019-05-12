@@ -5,4 +5,6 @@
     <color name="colorAccent">#F18B0E</color>
     <color name="colorPrimaryLight">#0292FF</color>
     <color name="colorError">#A50203</color>
+
+    <color name="colorBlackTrans">#7C000000</color>
 </resources>

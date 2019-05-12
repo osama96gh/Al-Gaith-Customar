@@ -12,6 +12,10 @@
             android:id="@+id/nav_massages"
             android:icon="@drawable/ic_massages"
             android:title="الرسائل" />
+        <item
+            android:id="@+id/nav_dates"
+            android:icon="@drawable/ic_date"
+            android:title="المواعيد" />
 
     </group>
 

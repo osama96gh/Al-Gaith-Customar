@@ -16,7 +16,8 @@
         android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".Activity.NewMassageActivity"></activity>
+        <activity android:name=".Activity.DatesActivity"></activity>
+        <activity android:name=".Activity.NewMassageActivity" />
         <activity
             android:name=".Activity.MassagesActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
@@ -44,7 +45,9 @@
         <activity
             android:name=".Activity.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
+
             android:label="@string/title_activity_main"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activity.SplachActivity"

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.design.widget.TextInputLayout;
@@ -15,6 +16,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -84,8 +86,11 @@ public class NewApplicationActivity extends AppCompatActivity {
         linearLayout.setPadding(convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4));
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setId(applicationField.id);
-        linearLayout.setBackground(getResources().getDrawable(R.drawable.fram_primary));
+        //linearLayout.setBackground(getResources().getDrawable(R.drawable.fram_primary));
         TextView titleTV = new TextView(this);
+        Typeface type = Typeface.createFromAsset(getAssets(), "tajawal.ttf");
+        titleTV.setTypeface(type);
+        titleTV.setTextColor(getResources().getColor(R.color.colorAccent));
         titleTV.setText(applicationField.field_name);
         RadioGroup radioGroup = new RadioGroup(this);
 
@@ -98,6 +103,9 @@ public class NewApplicationActivity extends AppCompatActivity {
             for (String choice : applicationField.enum_values) {
                 RadioButton radioButton = new RadioButton(this);
                 radioButton.setText(choice);
+                radioButton.setTypeface(type);
+                radioButton.setTextSize(18);
+                radioButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
                 radioGroup.addView(radioButton);
                 // setRadioButtonAttributes(radioButton);
             }
@@ -136,12 +144,19 @@ public class NewApplicationActivity extends AppCompatActivity {
         TextInputLayout editTextLayout = new TextInputLayout(this);
         editTextLayout.setPadding(convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4));
         editTextLayout.setLayoutParams(params);
+        editTextLayout.setDefaultHintTextColor(getResources().getColorStateList(R.color.colorAccent));
+
         editTextLayout.setId(applicationField.id);
-        editTextLayout.setBackground(getResources().getDrawable(R.drawable.fram_primary));
+        //editTextLayout.setBackground(getResources().getDrawable(R.drawable.fram_primary));
         rootView.addView(editTextLayout);
 
         EditText editText = new EditText(this);
         editText.setHint(applicationField.field_name);
+        editText.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+        Typeface type = Typeface.createFromAsset(getAssets(), "tajawal.ttf");
+        editText.setTypeface(type);
+        editText.setGravity(Gravity.RIGHT);
+        editText.setHintTextColor(getResources().getColor(R.color.colorAccent));
         // setEditTextAttributes(editText);
         editTextLayout.addView(editText);
 
@@ -155,12 +170,19 @@ public class NewApplicationActivity extends AppCompatActivity {
         TextInputLayout editTextLayout = new TextInputLayout(this);
         editTextLayout.setPadding(convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4));
         editTextLayout.setLayoutParams(params);
+        editTextLayout.setDefaultHintTextColor(getResources().getColorStateList(R.color.colorAccent));
+
         //editTextLayout.setId(id);
-        editTextLayout.setBackground(getResources().getDrawable(R.drawable.fram_primary));
+        // editTextLayout.setBackground(getResources().getDrawable(R.drawable.fram_primary));
         parentView.addView(editTextLayout);
 
         EditText editText = new EditText(this);
         editText.setHint(applicationField.field_name);
+        editText.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+        Typeface type = Typeface.createFromAsset(getAssets(), "tajawal.ttf");
+        editText.setTypeface(type);
+        editText.setHintTextColor(getResources().getColor(R.color.colorAccent));
+        editText.setGravity(Gravity.RIGHT);
         // setEditTextAttributes(editText);
         editTextLayout.addView(editText);
 
@@ -172,14 +194,20 @@ public class NewApplicationActivity extends AppCompatActivity {
         LinearLayout linearLayout = new LinearLayout(NewApplicationActivity.this);
         linearLayout.setPadding(convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4));
         linearLayout.setLayoutParams(getDefaultParam(4));
-        linearLayout.setBackground(getResources().getDrawable(R.drawable.fram_primary));
+        // linearLayout.setBackground(getResources().getDrawable(R.drawable.fram_primary));
         linearLayout.setId(applicationField.id);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 
         TextView titleTV = new TextView(this);
+        titleTV.setTextColor(getResources().getColor(R.color.colorAccent));
         titleTV.setText(applicationField.field_name);
+        Typeface type = Typeface.createFromAsset(getAssets(), "tajawal.ttf");
+        titleTV.setTypeface(type);
+
         ImageView imageView = new ImageView(this);
         imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_photo));
+        imageView.setBackground(getResources().getDrawable(R.drawable.fram_primary));
+        imageView.setPadding(convertDpToPixel(2), convertDpToPixel(2), convertDpToPixel(2), convertDpToPixel(2));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 convertDpToPixel(250));
@@ -204,17 +232,25 @@ public class NewApplicationActivity extends AppCompatActivity {
         linearLayout.setLayoutParams(getDefaultParam(4));
         linearLayout.setPadding(convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4), convertDpToPixel(4));
         linearLayout.setId(applicationField.id);
-        linearLayout.setBackground(getResources().getDrawable(R.drawable.fram_primary));
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         final LinearLayout container = new LinearLayout(this);
 
         container.setOrientation(LinearLayout.VERTICAL);
+        container.setBackground(getResources().getDrawable(R.drawable.fram_primary));
         container.setLayoutParams(getDefaultParam(4));
         Button addButton = new Button(this);
         addButton.setLayoutParams(getDefaultParam(4));
         addButton.setText("إضافة");
+        Typeface type = Typeface.createFromAsset(getAssets(), "tajawal.ttf");
+
+        addButton.setTypeface(type);
+        addButton.setTextColor(getResources().getColor(R.color.colorAccent));
         TextView titleTV = new TextView(this);
         titleTV.setText(applicationField.field_name);
+
+        titleTV.setTypeface(type);
+        titleTV.setTextColor(getResources().getColor(R.color.colorAccent));
+
         addButton.setGravity(CENTER);
         linearLayout.addView(titleTV);
         linearLayout.addView(container);

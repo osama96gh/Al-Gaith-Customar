@@ -38,7 +38,7 @@ public class ApplicationActivity extends AppCompatActivity implements Applicatio
         Intent intent = new Intent(ApplicationActivity.this, AppllicationDetailsActivity.class);
         intent.putExtra(AppData.APPLICATION_ID_KEY, item.id);
         startActivity(intent);
-        finish();
+        // finish();
     }
 
     public void newApplication(View view) {

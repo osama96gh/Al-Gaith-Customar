@@ -10,10 +10,13 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 
+import com.example.al_gaith_customar.Data.Announcement;
 import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Data.Application;
 import com.example.al_gaith_customar.Data.ApplicationData;
+import com.example.al_gaith_customar.Data.ApplicationDate;
 import com.example.al_gaith_customar.Data.ApplicationField;
+import com.example.al_gaith_customar.Data.ApplicationState;
 import com.example.al_gaith_customar.Data.ApplicationType;
 import com.example.al_gaith_customar.Data.Massage;
 import com.example.al_gaith_customar.Utility.QueryUtils;
@@ -155,6 +158,33 @@ public class GeneralUtility {
         return response;
     }
 
+    public static String getAnnouncementData(Context context, String auth) {
+        Uri baseUri = Uri.parse(AppData.BASIC_URI + "/announcement");
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
+
+
+        String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
+        Log.println(Log.ASSERT, "announcement response", response);
+
+        String error = "خطأ في الاتصال بالخادم";
+        return response;
+    }
+
+    public static String getMyApplicationsDate(Context context, String auth) {
+        Uri baseUri = Uri.parse(AppData.BASIC_URI + "/my/dates");
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
+
+
+        String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
+        Log.println(Log.ASSERT, "get application respon", response);
+
+        String error = "خطأ في الاتصال بالخادم";
+        return response;
+    }
+
+
     public static String getMyMassagesData(Context context, String auth) {
         Uri baseUri = Uri.parse(AppData.BASIC_URI + "/messages");
         Uri.Builder uriBuilder = baseUri.buildUpon();
@@ -253,6 +283,78 @@ public class GeneralUtility {
                 try {
                     Application application = gson.fromJson(contentJsonArry.getJSONObject(i).toString(), Application.class);
                     appList.add(application);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return appList;
+    }
+
+    public static ArrayList<Announcement> parseAnnouncement(String applicationJSON) {
+        ArrayList<Announcement> appList = new ArrayList<>();
+
+        JSONObject baseJsonResponse = null;
+        try {
+            baseJsonResponse = new JSONObject(applicationJSON);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject contentJsonObject = null;
+        if (baseJsonResponse != null) {
+
+            try {
+                contentJsonObject = baseJsonResponse.getJSONObject("success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        JSONArray contentJsonArry = null;
+        if (contentJsonObject != null) {
+            try {
+                contentJsonArry = contentJsonObject.getJSONArray("announcements");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if (contentJsonArry != null) {
+            Gson gson = new Gson();
+            for (int i = 0; i < contentJsonArry.length(); i++) {
+                try {
+                    Announcement announcement = gson.fromJson(contentJsonArry.getJSONObject(i).toString(), Announcement.class);
+                    appList.add(announcement);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return appList;
+    }
+
+    public static ArrayList<ApplicationDate> parseApplicationsDate(String applicationJSON) {
+        ArrayList<ApplicationDate> appList = new ArrayList<>();
+
+        JSONObject baseJsonResponse = null;
+        try {
+            baseJsonResponse = new JSONObject(applicationJSON);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONArray contentJsonArry = null;
+        if (baseJsonResponse != null) {
+
+            try {
+                contentJsonArry = baseJsonResponse.getJSONArray("success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if (contentJsonArry != null) {
+            Gson gson = new Gson();
+            for (int i = 0; i < contentJsonArry.length(); i++) {
+                try {
+                    ApplicationDate applicationDate = gson.fromJson(contentJsonArry.getJSONObject(i).toString(), ApplicationDate.class);
+                    appList.add(applicationDate);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -403,6 +505,40 @@ public class GeneralUtility {
             }
         }
         return appList;
+    }
+
+    public static ApplicationState parseApplicationStateData(String applicationFieldJSON) {
+
+        JSONObject baseJsonResponse = null;
+        try {
+            baseJsonResponse = new JSONObject(applicationFieldJSON);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject jsonObject = null;
+        if (baseJsonResponse != null) {
+            try {
+                jsonObject = baseJsonResponse.getJSONObject("success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        JSONObject contentJsonObject1 = null;
+        if (jsonObject != null) {
+            try {
+                contentJsonObject1 = jsonObject.getJSONObject("application");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        ApplicationState applicationState = null;
+        if (contentJsonObject1 != null) {
+            Gson gson = new Gson();
+            applicationState = gson.fromJson(contentJsonObject1.toString(), ApplicationState.class);
+
+        }
+
+        return applicationState;
     }
 
     public static String signUp(Context context, String first, String last, String

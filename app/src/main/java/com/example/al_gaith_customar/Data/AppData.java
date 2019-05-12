@@ -18,6 +18,7 @@ public class AppData {
     public static final String USER_NAME_KEY = "USER_NAME_KEY";
     public static final String USER_ID_KEY = "USER_ID_KEY";
     public static final String USER_PHOTO_KEY = "USER_PHOTO_KEY";
+    public static final String USER_GROUP_JSON_ARRAY_KEY = "USER_GROUP_JSON_ARRAY_KEY";
     public static final String APPLICATION_ID_KEY = "APPLICATION_ID_KEY";
     public static final String APPLICATION_TITLE_KEY = "APPLICATION_TITLE_KEY";
     public static final String MASSAGE_TYPE_KEY = "MASSAGE_TYPE_KEY";

@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.al_gaith_customar.Data.Massage;
@@ -41,7 +42,8 @@ public class MyMassageRecyclerViewAdapter extends RecyclerView.Adapter<MyMassage
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).created_at);
         holder.mContentView.setText(mValues.get(position).message);
-        holder.mTypeView.setText(mValues.get(position).message_type);
+        holder.mTypeView.setText(mValues.get(position).getMassageType());
+        holder.haveReplyLL.setVisibility(mValues.get(position).isMassageHaveReply() ? View.VISIBLE : View.GONE);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +67,8 @@ public class MyMassageRecyclerViewAdapter extends RecyclerView.Adapter<MyMassage
         public final TextView mIdView;
         public final TextView mContentView;
         public final TextView mTypeView;
+        public final LinearLayout haveReplyLL;
+
         public Massage mItem;
 
         public ViewHolder(View view) {
@@ -73,6 +77,7 @@ public class MyMassageRecyclerViewAdapter extends RecyclerView.Adapter<MyMassage
             mIdView = (TextView) view.findViewById(R.id.item_number);
             mContentView = (TextView) view.findViewById(R.id.content);
             mTypeView = view.findViewById(R.id.item_type);
+            haveReplyLL = view.findViewById(R.id.massage_have_reply_ll);
         }
 
         @Override

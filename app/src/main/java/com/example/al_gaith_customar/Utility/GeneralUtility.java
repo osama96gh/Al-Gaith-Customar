@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 
@@ -19,7 +20,11 @@ import com.example.al_gaith_customar.Data.ApplicationField;
 import com.example.al_gaith_customar.Data.ApplicationState;
 import com.example.al_gaith_customar.Data.ApplicationType;
 import com.example.al_gaith_customar.Data.Massage;
+import com.example.al_gaith_customar.Data.Reply;
 import com.example.al_gaith_customar.Utility.QueryUtils;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -31,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.support.constraint.Constraints.TAG;
 
 public class GeneralUtility {
 
@@ -65,7 +71,7 @@ public class GeneralUtility {
 
         if (baseJsonObject != null) {
             try {
-                massage = baseJsonObject.getString("error_massage");
+                massage = baseJsonObject.getString("error_message");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -119,11 +125,14 @@ public class GeneralUtility {
                 String name = resultJsonObject.getString("name");
                 String id = resultJsonObject.getString("username");
                 String photo = resultJsonObject.getString("profile_picture");
+                JSONArray jsonArray = resultJsonObject.getJSONArray("groups");
+
 
                 saveString(AppData.USER_TOKEN_KEY, token, context);
                 saveString(AppData.USER_ID_KEY, id, context);
                 saveString(AppData.USER_NAME_KEY, name, context);
                 saveString(AppData.USER_PHOTO_KEY, photo, context);
+                saveString(AppData.USER_GROUP_JSON_ARRAY_KEY, jsonArray.toString(), context);
                 AppData.userToken = token;
                 AppData.userName = name;
                 AppData.userId = id;
@@ -137,7 +146,7 @@ public class GeneralUtility {
                 e.printStackTrace();
             }
             try {
-                error = baseJsonResponse.getString("error");
+                error = baseJsonResponse.getString("error_message");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -162,6 +171,20 @@ public class GeneralUtility {
         Uri baseUri = Uri.parse(AppData.BASIC_URI + "/announcement");
         Uri.Builder uriBuilder = baseUri.buildUpon();
         uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
+
+
+        String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
+        Log.println(Log.ASSERT, "announcement response", response);
+
+        String error = "خطأ في الاتصال بالخادم";
+        return response;
+    }
+
+    public static String getMassageData(Context context, String auth, String massage_id) {
+        Uri baseUri = Uri.parse(AppData.BASIC_URI + "/message/responses");
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
+        uriBuilder.appendQueryParameter("id", massage_id);
 
 
         String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
@@ -241,9 +264,7 @@ public class GeneralUtility {
         uriBuilder.appendQueryParameter("data", data);
         String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
         Log.println(Log.ASSERT, "send app response", response);
-        String result = null;
-        result = getSuccessMassage(response);
-        return result;
+        return response;
     }
 
     public static String sendMassageData(Context context, String auth, String massageType, String massage) {
@@ -323,6 +344,46 @@ public class GeneralUtility {
                 try {
                     Announcement announcement = gson.fromJson(contentJsonArry.getJSONObject(i).toString(), Announcement.class);
                     appList.add(announcement);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return appList;
+    }
+
+    public static ArrayList<Reply> Reply(String applicationJSON) {
+        ArrayList<Reply> appList = new ArrayList<>();
+
+        JSONObject baseJsonResponse = null;
+        try {
+            baseJsonResponse = new JSONObject(applicationJSON);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject contentJsonObject = null;
+        if (baseJsonResponse != null) {
+
+            try {
+                contentJsonObject = baseJsonResponse.getJSONObject("success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        JSONArray contentJsonArry = null;
+        if (contentJsonObject != null) {
+            try {
+                contentJsonArry = contentJsonObject.getJSONArray("responses");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if (contentJsonArry != null) {
+            Gson gson = new Gson();
+            for (int i = 0; i < contentJsonArry.length(); i++) {
+                try {
+                    Reply reply = gson.fromJson(contentJsonArry.getJSONObject(i).toString(), Reply.class);
+                    appList.add(reply);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -593,7 +654,7 @@ public class GeneralUtility {
                 e.printStackTrace();
             }
             try {
-                error = baseJsonResponse.getString("error");
+                error = baseJsonResponse.getString("error_message");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -650,6 +711,24 @@ public class GeneralUtility {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         return byteArray;
+    }
+
+    public static void subsicribe(final String topic) {
+
+        Log.d(TAG, "Subscribing to weather topic");
+        // [START subscribe_topics]
+        FirebaseMessaging.getInstance().subscribeToTopic(topic)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "Subscribed to " + topic;
+                        if (!task.isSuccessful()) {
+                            msg = "Fail subscribe to " + topic;
+                        }
+                        Log.println(Log.ASSERT, TAG, msg);
+                    }
+                });
+
     }
 
 }

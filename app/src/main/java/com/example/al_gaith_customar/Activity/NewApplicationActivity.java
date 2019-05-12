@@ -363,7 +363,7 @@ public class NewApplicationActivity extends AppCompatActivity {
         int size = dataList.size();
         for (int i = 0; i < size; i++) {
             ApplicationData applicationData = dataList.get(i);
-            if (applicationData.field_type.matches("text")) {
+            if (applicationData.field_type.matches("text")||applicationData.field_type.matches("number")) {
                 TextInputLayout textInputLayout = rootView.findViewById(applicationData.field_id);
                 dataList.get(i).value = getTextFromTextInputLayout(textInputLayout);
             } else if (applicationData.field_type.matches("button")) {
@@ -447,6 +447,8 @@ public class NewApplicationActivity extends AppCompatActivity {
             super.onPreExecute();
             updateData();
             uploadPB.setVisibility(View.VISIBLE);
+            errorLayout.setVisibility(View.GONE);
+
         }
 
         @Override
@@ -460,16 +462,33 @@ public class NewApplicationActivity extends AppCompatActivity {
             super.onPostExecute(s);
             uploadPB.setVisibility(View.GONE);
             if (s != null) {
-                Toast.makeText(NewApplicationActivity.this, s, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(NewApplicationActivity.this, ApplicationActivity.class);
-                startActivity(intent);
-                finish();
+                String success = GeneralUtility.getSuccessMassage(s);
+                if (success != null) {
+                    Toast.makeText(NewApplicationActivity.this, success, Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(NewApplicationActivity.this, ApplicationActivity.class);
+                    startActivity(intent);
+                    finish();
+
+                } else {
+                    String errorMassage = GeneralUtility.getErrorMassage(s);
+                    if (errorMassage != null) {
+                        errorLayout.setVisibility(View.VISIBLE);
+                        errorTV.setText("" + errorMassage);
+
+                    } else {
+                        errorLayout.setVisibility(View.VISIBLE);
+                        errorTV.setText("خطأ في الإتصال بالخادم!");
+                    }
+                }
             } else {
-                Toast.makeText(NewApplicationActivity.this, "حصل خطأ ما", Toast.LENGTH_LONG).show();
+                errorLayout.setVisibility(View.VISIBLE);
+                errorTV.setText("خطأ في الإتصال بالخادم!");
             }
 
         }
+
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -1,6 +1,7 @@
 package com.example.al_gaith_customar.Activity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -9,9 +10,13 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.example.al_gaith_customar.Data.Announcement;
+import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Data.Massage;
 import com.example.al_gaith_customar.Fragment.MassageFragment;
 import com.example.al_gaith_customar.R;
+import com.example.al_gaith_customar.Utility.GeneralUtility;
+import com.google.gson.Gson;
 
 public class MassagesActivity extends AppCompatActivity implements MassageFragment.OnListFragmentInteractionListener {
     FrameLayout massagesContainer;
@@ -37,6 +42,14 @@ public class MassagesActivity extends AppCompatActivity implements MassageFragme
 
     @Override
     public void onListFragmentInteraction(Massage item) {
-        Toast.makeText(this, "" + item.message, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, MassageDetailsActivity.class);
+        Gson gson = new Gson();
+
+        String massage = gson.toJson(item);
+        intent.putExtra("massage", massage);
+        startActivity(intent);
+        finish();
     }
+
+
 }

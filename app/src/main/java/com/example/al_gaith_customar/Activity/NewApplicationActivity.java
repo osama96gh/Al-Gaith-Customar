@@ -73,6 +73,15 @@ public class NewApplicationActivity extends AppCompatActivity {
         LoadApplicationFields loadApplicationFields = new LoadApplicationFields();
         loadApplicationFields.execute();
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
     }
 
 
@@ -334,6 +343,7 @@ public class NewApplicationActivity extends AppCompatActivity {
     public void sendApplication(View view) {
         SendApplicationData sendApplicationData = new SendApplicationData();
         sendApplicationData.execute();
+
     }
 
     String getTextFromTextInputLayout(TextInputLayout textInputLayout) {
@@ -363,7 +373,7 @@ public class NewApplicationActivity extends AppCompatActivity {
         int size = dataList.size();
         for (int i = 0; i < size; i++) {
             ApplicationData applicationData = dataList.get(i);
-            if (applicationData.field_type.matches("text")||applicationData.field_type.matches("number")) {
+            if (applicationData.field_type.matches("text") || applicationData.field_type.matches("number")) {
                 TextInputLayout textInputLayout = rootView.findViewById(applicationData.field_id);
                 dataList.get(i).value = getTextFromTextInputLayout(textInputLayout);
             } else if (applicationData.field_type.matches("button")) {
@@ -381,6 +391,13 @@ public class NewApplicationActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, ApplicationActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     String getDataAsJSONArray() {
@@ -464,11 +481,8 @@ public class NewApplicationActivity extends AppCompatActivity {
             if (s != null) {
                 String success = GeneralUtility.getSuccessMassage(s);
                 if (success != null) {
-                    Toast.makeText(NewApplicationActivity.this, success, Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(NewApplicationActivity.this, ApplicationActivity.class);
-                    startActivity(intent);
-                    finish();
 
+                    onBackPressed();
                 } else {
                     String errorMassage = GeneralUtility.getErrorMassage(s);
                     if (errorMassage != null) {

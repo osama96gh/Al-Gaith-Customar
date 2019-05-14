@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.al_gaith_customar.Data.Application;
@@ -36,8 +37,10 @@ public class MyApplicationRecyclerViewAdapter extends RecyclerView.Adapter<MyApp
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mDateView.setText(""+mValues.get(position).created_at);
-        holder.mContentView.setText(""+mValues.get(position).app_name);
+        holder.mDateView.setText("" + mValues.get(position).created_at);
+        holder.mContentView.setText("" + mValues.get(position).app_name);
+        holder.mStatusView.setText(mValues.get(position).status);
+        holder.mHaveReplyView.setVisibility(mValues.get(position).isAppHaveReply() ? View.VISIBLE : View.GONE);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,18 +63,23 @@ public class MyApplicationRecyclerViewAdapter extends RecyclerView.Adapter<MyApp
         public final View mView;
         public final TextView mDateView;
         public final TextView mContentView;
+        public final TextView mStatusView;
+        public final LinearLayout mHaveReplyView;
         public Application mItem;
+
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
             mDateView = (TextView) view.findViewById(R.id.date);
             mContentView = (TextView) view.findViewById(R.id.content);
+            mStatusView = view.findViewById(R.id.status);
+            mHaveReplyView = view.findViewById(R.id.app_have_reply_ll);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mContentView.getText() + "' ";
         }
     }
 }

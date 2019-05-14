@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.al_gaith_customar.Data.ApplicationDate;
@@ -41,6 +42,7 @@ public class MyAppLicationDateRecyclerViewAdapter extends RecyclerView.Adapter<M
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).app_name);
         holder.mContentView.setText(mValues.get(position).review_date);
+        holder.haveReplyLL.setVisibility(mValues.get(position).isDateHaveReply() ? View.VISIBLE : View.GONE);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,6 +65,7 @@ public class MyAppLicationDateRecyclerViewAdapter extends RecyclerView.Adapter<M
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
+        public final LinearLayout haveReplyLL;
         public ApplicationDate mItem;
 
         public ViewHolder(View view) {
@@ -70,6 +73,7 @@ public class MyAppLicationDateRecyclerViewAdapter extends RecyclerView.Adapter<M
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.item_number);
             mContentView = (TextView) view.findViewById(R.id.content);
+            haveReplyLL = view.findViewById(R.id.date_have_reply_ll);
         }
 
         @Override

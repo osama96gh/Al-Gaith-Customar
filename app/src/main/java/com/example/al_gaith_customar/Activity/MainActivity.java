@@ -1,6 +1,7 @@
 package com.example.al_gaith_customar.Activity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -15,23 +16,45 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+
+import com.daimajia.slider.library.Animations.DescriptionAnimation;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.TextSliderView;
+import com.daimajia.slider.library.Tricks.ViewPagerEx;
+import com.example.al_gaith_customar.Data.Ads;
 import com.example.al_gaith_customar.Data.Announcement;
 import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Fragment.AnnouncementFragment;
 import com.example.al_gaith_customar.R;
 import com.example.al_gaith_customar.Utility.GeneralUtility;
+import com.google.gson.JsonArray;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AnnouncementFragment.OnListFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AnnouncementFragment.OnListFragmentInteractionListener, BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
     Boolean isLogIn = false;
 
     ImageView userPhoto;
     TextView userId, userName;
+    ArrayList<Ads> adsList = new ArrayList<>();
+    private SliderLayout mDemoSlider;
+    MenuItem massageItem, applicationItem, datesItem;
+    LoadAppAndMassStat loadAppAndMassStat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +66,9 @@ public class MainActivity extends AppCompatActivity
         userId = hedar.findViewById(R.id.userInfo_username);
         userName = hedar.findViewById(R.id.userInfo_name);
         userPhoto = hedar.findViewById(R.id.userInfo_photo);
+
+
         if (userName == null) {
-            Toast.makeText(this, "null", Toast.LENGTH_SHORT).show();
         }
         initilizeUserInfo();
         setSupportActionBar(toolbar);
@@ -58,8 +82,52 @@ public class MainActivity extends AppCompatActivity
 
 
         navigationView.setNavigationItemSelectedListener(this);
+        Menu menu = navigationView.getMenu();
 
+        // find MenuItem  want to change
+        massageItem = menu.findItem(R.id.nav_massages);
+        applicationItem = menu.findItem(R.id.nav_requests);
+        datesItem = menu.findItem(R.id.nav_dates);
         setAnnouncmentFragment(AnnouncementFragment.newInstance(1));
+
+        mDemoSlider = (SliderLayout) findViewById(R.id.slider);
+
+
+        loadAppAndMassStat = new LoadAppAndMassStat();
+        LoadMyGroup loadMyGroup = new LoadMyGroup();
+        loadMyGroup.execute();
+
+        LoadMyApplication loadMyApplication = new LoadMyApplication();
+        loadMyApplication.execute();
+
+    }
+
+    void setAdsSlider(HashMap<String, String> url_maps) {
+        mDemoSlider.removeAllSliders();
+        for (String name : url_maps.keySet()) {
+            TextSliderView textSliderView = new TextSliderView(this);
+            // initialize a SliderLayout
+            textSliderView
+                    .description(name)
+                    .image(url_maps.get(name))
+                    .setScaleType(BaseSliderView.ScaleType.Fit)
+                    .setOnSliderClickListener(this);
+
+            //add your extra information
+            textSliderView.bundle(new Bundle());
+            textSliderView.getBundle()
+
+                    .putString("extra", name);
+            textSliderView.setScaleType(BaseSliderView.ScaleType.CenterInside);
+
+            mDemoSlider.addSlider(textSliderView);
+        }
+        mDemoSlider.setPresetTransformer(SliderLayout.Transformer.FlipHorizontal);
+        mDemoSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        mDemoSlider.setCustomAnimation(new DescriptionAnimation());
+        mDemoSlider.setDuration(4000);
+        mDemoSlider.addOnPageChangeListener(this);
+
 
     }
 
@@ -67,6 +135,20 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction t = getSupportFragmentManager().beginTransaction();
         t.replace(R.id.annoument_container, fragment);
         t.commit();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        loadAppAndMassStat.cancel(true);
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        loadAppAndMassStat = new LoadAppAndMassStat();
+        loadAppAndMassStat.execute();
     }
 
     private void initilizeUserInfo() {
@@ -124,7 +206,6 @@ public class MainActivity extends AppCompatActivity
             // finish();
         } else if (id == R.id.nav_requests) {
 
-            Toast.makeText(this, "الطلبات", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(MainActivity.this, ApplicationActivity.class);
             startActivity(intent);
             //   finish();
@@ -154,4 +235,121 @@ public class MainActivity extends AppCompatActivity
     public void onListFragmentInteraction(Announcement item) {
 
     }
+
+
+    @Override
+    public void onSliderClick(BaseSliderView slider) {
+
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+    class LoadAppAndMassStat extends AsyncTask<Void, Void, String> {
+        @Override
+        protected String doInBackground(Void... voids) {
+            return GeneralUtility.getAppAndMassageData(MainActivity.this, AppData.authType + AppData.userToken);
+
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            int massage = 0, application = 0, dates = 0;
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(s);
+
+
+                jsonObject = jsonObject.getJSONObject("success");
+
+                massage = jsonObject.getInt("messages");
+                application = jsonObject.getInt("applications");
+                dates = jsonObject.getInt("dates");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if (massage != -1) {
+                massageItem.setTitle("الرسائل " + "(" + massage + ")");
+            }
+            if (application != -1) {
+                applicationItem.setTitle("الطلبات " + "(" + application + ")");
+            }
+            if (dates != -1) {
+                datesItem.setTitle("المواعيد " + "(" + dates + ")");
+            }
+        }
+    }
+
+    class LoadMyGroup extends AsyncTask<Void, Void, String> {
+        @Override
+        protected String doInBackground(Void... voids) {
+            return GeneralUtility.getMyGroupData(MainActivity.this, AppData.authType + AppData.userToken);
+
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            ArrayList<String> groups = new ArrayList<>();
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(s);
+
+
+                jsonObject = jsonObject.getJSONObject("success");
+
+                JSONArray jsonArray = jsonObject.getJSONArray("groups");
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    groups.add(jsonArray.getString(i));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            for (String group : groups) {
+                Log.println(Log.ASSERT, "main group", group);
+                GeneralUtility.subsicribe(group);
+            }
+        }
+    }
+
+    class LoadMyApplication extends AsyncTask<Void, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+
+            return GeneralUtility.getMyAdsData(MainActivity.this, AppData.authType + AppData.userToken);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            HashMap<String, String> url_maps = new HashMap<String, String>();
+
+            for (Ads announcement : GeneralUtility.parseAds(s)) {
+                adsList.add(announcement);
+                url_maps.put(announcement.announce, announcement.image);
+
+            }
+            setAdsSlider(url_maps);
+        }
+    }
+
 }

@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
@@ -24,6 +25,16 @@ public class ApplicationActivity extends AppCompatActivity implements Applicatio
 //        SendApplication sendApplication = new SendApplication();
 //        sendApplication.execute();
         setFragment(ApplicationFragment.newInstance(1));
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
     }
 
     protected void setFragment(Fragment fragment) {
@@ -34,11 +45,10 @@ public class ApplicationActivity extends AppCompatActivity implements Applicatio
 
     @Override
     public void onListFragmentInteraction(Application item) {
-        Toast.makeText(this, "" + item.id, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(ApplicationActivity.this, AppllicationDetailsActivity.class);
         intent.putExtra(AppData.APPLICATION_ID_KEY, item.id);
         startActivity(intent);
-        // finish();
+        finish();
     }
 
     public void newApplication(View view) {

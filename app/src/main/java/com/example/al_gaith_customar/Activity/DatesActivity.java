@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Data.ApplicationDate;
@@ -18,6 +20,15 @@ public class DatesActivity extends AppCompatActivity implements AppLicationDateF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dates);
         setFragment(AppLicationDateFragment.newInstance(1));
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     protected void setFragment(Fragment fragment) {
@@ -31,5 +42,6 @@ public class DatesActivity extends AppCompatActivity implements AppLicationDateF
         Intent intent = new Intent(DatesActivity.this, AppllicationDetailsActivity.class);
         intent.putExtra(AppData.APPLICATION_ID_KEY, item.id);
         startActivity(intent);
+        finish();
     }
 }

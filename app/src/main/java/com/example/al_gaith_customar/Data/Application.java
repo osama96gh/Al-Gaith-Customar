@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class Application {
     public int id, sequence;
-    public String app_name, description, status, review_date, response, created_at;
+    public String app_name, description, status, review_date, response, created_at, read_status, admin_response;
 
     public Date getDate() {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -18,5 +18,13 @@ public class Application {
             e.printStackTrace();
         }
         return date;
+    }
+
+    public boolean isAppHaveReply() {
+        if (read_status.matches("read")) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

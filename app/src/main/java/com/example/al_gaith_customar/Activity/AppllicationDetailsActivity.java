@@ -1,14 +1,17 @@
 package com.example.al_gaith_customar.Activity;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,10 +29,18 @@ import java.util.ArrayList;
 public class AppllicationDetailsActivity extends AppCompatActivity {
     LinearLayout rootView;
     int app_id;
-    TextView stateTV, responseTV, reviewDateTV, sendDateTV;
+    TextView stateTV, responseTV, responseAdminTV, reviewDateTV, sendDateTV;
 
     LoadApplicationDetails loadApplicationDetails;
     ArrayList<ApplicationData> dataList = new ArrayList<>();
+
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, ApplicationActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +51,8 @@ public class AppllicationDetailsActivity extends AppCompatActivity {
         //rootView.setBackground(getResources().getDrawable(R.drawable.fram_primary));
 
         responseTV = findViewById(R.id.app_detal_response);
+        responseAdminTV = findViewById(R.id.app_detal_response_admin);
+
         reviewDateTV = findViewById(R.id.app_detal_review_date);
         sendDateTV = findViewById(R.id.app_detal_send_date);
         stateTV = findViewById(R.id.app_detal_state);
@@ -49,6 +62,15 @@ public class AppllicationDetailsActivity extends AppCompatActivity {
         loadApplicationDetails = new LoadApplicationDetails();
         loadApplicationDetails.execute();
 
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     private void addTextField(ApplicationData applicationData) {
@@ -154,6 +176,9 @@ public class AppllicationDetailsActivity extends AppCompatActivity {
             }
             if (applicationState.response != null && !applicationState.response.isEmpty()) {
                 responseTV.setText(applicationState.response);
+            }
+            if (applicationState.admin_response != null && !applicationState.admin_response.isEmpty()) {
+                responseAdminTV.setText(applicationState.admin_response);
             }
             if (applicationState.review_date != null && !applicationState.review_date.isEmpty()) {
                 reviewDateTV.setText(applicationState.review_date);

@@ -56,6 +56,48 @@
                     tools:text="30/6/2015" />
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="حالة الطلب: "
+                    android:textColor="@color/colorAccent"
+                    app:fontFamily="@font/cairo" />
+
+                <TextView
+                    android:id="@+id/status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/colorPrimaryDark"
+                    app:fontFamily="@font/cairo"
+                    tools:text="لم يحدد بعد" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/app_have_reply_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_error"
+                    android:tint="@color/colorCorrect" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/cairo"
+                    android:text="لديك رد جديد على هذا الطلب"
+                    android:textColor="@color/colorCorrect"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
     </android.support.v7.widget.CardView>
 

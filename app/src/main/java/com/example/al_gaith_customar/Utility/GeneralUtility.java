@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 
+import com.example.al_gaith_customar.Data.Ads;
 import com.example.al_gaith_customar.Data.Announcement;
 import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Data.Application;
@@ -169,6 +170,45 @@ public class GeneralUtility {
 
     public static String getAnnouncementData(Context context, String auth) {
         Uri baseUri = Uri.parse(AppData.BASIC_URI + "/announcement");
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
+
+
+        String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
+        Log.println(Log.ASSERT, "announcement response", response);
+
+        String error = "خطأ في الاتصال بالخادم";
+        return response;
+    }
+
+    public static String getAppAndMassageData(Context context, String auth) {
+        Uri baseUri = Uri.parse(AppData.BASIC_URI + "/notifications/new");
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
+
+
+        String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
+        Log.println(Log.ASSERT, "announcement response", response);
+
+        String error = "خطأ في الاتصال بالخادم";
+        return response;
+    }
+
+    public static String getMyGroupData(Context context, String auth) {
+        Uri baseUri = Uri.parse(AppData.BASIC_URI + "/my/groups");
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
+
+
+        String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
+        Log.println(Log.ASSERT, "announcement response", response);
+
+        String error = "خطأ في الاتصال بالخادم";
+        return response;
+    }
+
+    public static String getMyAdsData(Context context, String auth) {
+        Uri baseUri = Uri.parse(AppData.BASIC_URI + "/alresalah/ads");
         Uri.Builder uriBuilder = baseUri.buildUpon();
         uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
 
@@ -343,6 +383,45 @@ public class GeneralUtility {
             for (int i = 0; i < contentJsonArry.length(); i++) {
                 try {
                     Announcement announcement = gson.fromJson(contentJsonArry.getJSONObject(i).toString(), Announcement.class);
+                    appList.add(announcement);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return appList;
+    }
+    public static ArrayList<Ads> parseAds(String applicationJSON) {
+        ArrayList<Ads> appList = new ArrayList<>();
+
+        JSONObject baseJsonResponse = null;
+        try {
+            baseJsonResponse = new JSONObject(applicationJSON);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject contentJsonObject = null;
+        if (baseJsonResponse != null) {
+
+            try {
+                contentJsonObject = baseJsonResponse.getJSONObject("success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        JSONArray contentJsonArry = null;
+        if (contentJsonObject != null) {
+            try {
+                contentJsonArry = contentJsonObject.getJSONArray("announcements");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if (contentJsonArry != null) {
+            Gson gson = new Gson();
+            for (int i = 0; i < contentJsonArry.length(); i++) {
+                try {
+                    Ads announcement = gson.fromJson(contentJsonArry.getJSONObject(i).toString(), Ads.class);
                     appList.add(announcement);
                 } catch (JSONException e) {
                     e.printStackTrace();

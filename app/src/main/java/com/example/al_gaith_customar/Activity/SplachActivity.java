@@ -42,7 +42,7 @@ public class SplachActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
+            //super.onPostExecute(o);
             AppData.userToken = GeneralUtility.readString(AppData.USER_TOKEN_KEY, SplachActivity.this);
             AppData.userId = GeneralUtility.readString(AppData.USER_ID_KEY, SplachActivity.this);
             AppData.userName = GeneralUtility.readString(AppData.USER_NAME_KEY, SplachActivity.this);

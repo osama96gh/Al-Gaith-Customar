@@ -1,6 +1,6 @@
 package com.example.al_gaith_customar.Fragment;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.al_gaith_customar.Data.Announcement;
-import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Fragment.AnnouncementFragment.OnListFragmentInteractionListener;
 import com.example.al_gaith_customar.Fragment.dummy.DummyContent.DummyItem;
 import com.example.al_gaith_customar.R;

@@ -1,6 +1,6 @@
 package com.example.al_gaith_customar.Fragment;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +12,6 @@ import com.example.al_gaith_customar.Fragment.dummy.DummyContent.DummyItem;
 import com.example.al_gaith_customar.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the

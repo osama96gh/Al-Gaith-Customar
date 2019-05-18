@@ -41,7 +41,7 @@
                 android:layout_marginBottom="8dp"
                 android:visibility="gone" />
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -56,9 +56,9 @@
                     android:textColor="@color/colorPrimaryDark"
                     android:textColorHint="@color/colorAccent" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -76,7 +76,7 @@
                     android:singleLine="true"
                     android:textColor="@color/colorPrimaryDark" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:id="@+id/error_ll"

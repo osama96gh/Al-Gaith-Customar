@@ -2,18 +2,27 @@ package com.example.al_gaith_customar.Activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+
+import com.google.android.material.textfield.TextInputLayout;
+
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+
+import androidx.appcompat.widget.Toolbar;
+
+import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -39,9 +48,36 @@ import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
 
+import net.gotev.uploadservice.MultipartUploadRequest;
+import net.gotev.uploadservice.ServerResponse;
+import net.gotev.uploadservice.UploadInfo;
+import net.gotev.uploadservice.UploadNotificationConfig;
+import net.gotev.uploadservice.UploadServiceBroadcastReceiver;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 import static android.view.Gravity.CENTER;
+
+class ImageInfo {
+    public String path;
+    public String fiald_id;
+
+    public ImageInfo(String path, String fiald_id) {
+        this.path = path;
+        this.fiald_id = fiald_id;
+    }
+
+    public String getKey() {
+        return "image-" + fiald_id;
+    }
+}
 
 public class NewApplicationActivity extends AppCompatActivity {
     int appId = 0;
@@ -54,7 +90,7 @@ public class NewApplicationActivity extends AppCompatActivity {
     TextView errorTV;
     ProgressBar uploadPB;
     ProgressBar loadPB;
-
+    ArrayList<ImageInfo> imageList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -311,7 +347,7 @@ public class NewApplicationActivity extends AppCompatActivity {
 
     void requstReadPermission() {
         ActivityCompat.requestPermissions(NewApplicationActivity.this,
-                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 1);
     }
 
@@ -481,8 +517,16 @@ public class NewApplicationActivity extends AppCompatActivity {
             if (s != null) {
                 String success = GeneralUtility.getSuccessMassage(s);
                 if (success != null) {
+                    try {
 
-                    onBackPressed();
+                        uploadImage(success);
+
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    // onBackPressed();
                 } else {
                     String errorMassage = GeneralUtility.getErrorMassage(s);
                     if (errorMassage != null) {
@@ -503,29 +547,114 @@ public class NewApplicationActivity extends AppCompatActivity {
 
     }
 
+    void uploadImage(String application_id) throws MalformedURLException, FileNotFoundException {
+        MultipartUploadRequest multipartUploadRequest = new MultipartUploadRequest(NewApplicationActivity.this, AppData.BASIC_URI + "/upload/files");
+        for (ImageInfo imageInfo : imageList) {
+            multipartUploadRequest.addFileToUpload(imageInfo.path, imageInfo.getKey());
+        }
+
+        String uploadId = multipartUploadRequest
+                .addParameter("data", "osama")
+                .setNotificationConfig(new UploadNotificationConfig())
+                .setMaxRetries(2)
+                .addParameter("application_id", application_id)
+                .addParameter("type", "application")
+                .setDelegate(new UploadServiceBroadcastReceiver() {
+                    @Override
+                    public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
+                        Log.println(Log.ASSERT, "resulte", serverResponse.getBodyAsString());
+                        super.onCompleted(context, uploadInfo, serverResponse);
+
+                        onBackPressed();
+                    }
+
+                    @Override
+                    public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
+
+                        Log.println(Log.ASSERT, "error", serverResponse.getBodyAsString());
+                        super.onError(context, uploadInfo, serverResponse, exception);
+                    }
+
+                    @Override
+                    public void onCancelled(Context context, UploadInfo uploadInfo) {
+                        Log.println(Log.ASSERT, "onCancelled", "" + uploadInfo.getSuccessfullyUploadedFiles().size());
+
+                        super.onCancelled(context, uploadInfo);
+                    }
+                })
+                .startUpload();
+
+    }
+
+    public String getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return path;
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Result code is RESULT_OK only if the user selects an Image
         Uri imageUri;
         Bitmap imageBitMap;
-
         if (resultCode == Activity.RESULT_OK) {
 
-            imageUri = data.getData();
-            imageBitMap = GeneralUtility.getImageFromUri(NewApplicationActivity.this, imageUri);
-            String base64 = GeneralUtility.getBase64(imageBitMap);
-            for (int i = 0; i < dataList.size(); i++) {
-                if (dataList.get(i).field_id == requestCode) {
-                    dataList.get(i).value = base64;
-                    break;
-                }
+                imageUri = data.getData();
+                imageBitMap = GeneralUtility.getImageFromUri(NewApplicationActivity.this, imageUri);
+
+            try {
+                File outputDir = this.getCacheDir(); // context being the Activity pointer
+
+                File outputFile = File.createTempFile("osaka", ".jpg", outputDir);
+                OutputStream outStream = null;
+
+                outStream = new FileOutputStream(outputFile);
+                imageBitMap.compress(Bitmap.CompressFormat.PNG, 85, outStream);
+                outStream.close();
+                Toast.makeText(getApplicationContext(), "Saved" + outputFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                imageList.add(new ImageInfo(outputFile.getAbsolutePath(), "" + requestCode));
+                uploadImage("" + requestCode);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
+            // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
+            //  String tempUri = getImageUri(this,imageBitMap);
+
+            // CALL THIS METHOD TO GET THE ACTUAL PATH
+
+            // Log.println(Log.ASSERT,"file path",tempUri);
+            //File finalFile = new File(tempUri);
+            // imageList.add(new ImageInfo(finalFile.getAbsolutePath(), "" + requestCode));
+
+            // String base64 = GeneralUtility.getBase64(imageBitMap);
+//            for (int i = 0; i < dataList.size(); i++) {
+//                if (dataList.get(i).field_id == requestCode) {
+//                    dataList.get(i).value = base64;
+//                    break;
+//                }
+//            }
 //            pickIdBehindPhoto.setImageBitmap(imageBitMap);
 //            pickIdBehindPhoto.setColorFilter(null);
 //            ImageViewCompat.setImageTintList(pickIdBehindPhoto, null);
             ((ImageView) (((LinearLayout) rootView.findViewById(requestCode)).getChildAt(1))).setImageBitmap(imageBitMap);
         }
+    }
+
+
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
     }
 }

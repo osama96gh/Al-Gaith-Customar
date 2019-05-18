@@ -1,11 +1,9 @@
 package com.example.al_gaith_customar;
 
 import android.app.Application;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.al_gaith_customar.Activity.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -13,8 +11,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-
-import static android.support.constraint.Constraints.TAG;
+import net.gotev.uploadservice.UploadService;
 
 public class MyApp extends Application {
 
@@ -22,6 +19,8 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
+
         /* Enable disk persistence  */
         FirebaseApp.initializeApp(this);
 
@@ -31,7 +30,6 @@ public class MyApp extends Application {
     }
     void subsicribe(final String topic) {
 
-        Log.d(TAG, "Subscribing to weather topic");
         // [START subscribe_topics]
         FirebaseMessaging.getInstance().subscribeToTopic(topic)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -41,7 +39,6 @@ public class MyApp extends Application {
                         if (!task.isSuccessful()) {
                             msg = "Fail subscribe to "+topic;
                         }
-                        Log.println(Log.ASSERT, TAG, msg);
                     }
                 });
 
@@ -53,7 +50,7 @@ public class MyApp extends Application {
                     @Override
                     public void onComplete(@NonNull Task<InstanceIdResult> task) {
                         if (!task.isSuccessful()) {
-                            Log.println(Log.ASSERT, TAG, "getInstanceId failed " + task.getException().getMessage());
+                            Log.println(Log.ASSERT, "tag", "getInstanceId failed " + task.getException().getMessage());
                             return;
                         }
 
@@ -62,7 +59,7 @@ public class MyApp extends Application {
 
                         // Log and toast
                         String msg = "message token ft" + " " + token;
-                        Log.println(Log.ASSERT, TAG, msg);
+                        Log.println(Log.ASSERT, "tag", msg);
                     }
                 });
     }

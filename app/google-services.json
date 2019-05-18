@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "907962469597",
+    "firebase_url": "https://al-gaith-customar.firebaseio.com",
+    "project_id": "al-gaith-customar",
+    "storage_bucket": "al-gaith-customar.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:907962469597:android:060d10cdea82b675",
+        "android_client_info": {
+          "package_name": "com.example.al_gaith_customar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "907962469597-knene2irbkgc0upiios5fchuppp7brmo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.al_gaith_customar",
+            "certificate_hash": "2c75669c864c6634744ae5174dc58b5e2cf399a5"
+          }
+        },
+        {
+          "client_id": "907962469597-8q20mh83mis3l1skm17orin8m13hf56g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDc9reosK3FdcZFMRvHqSVm8MWvkbodmtM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "907962469597-8q20mh83mis3l1skm17orin8m13hf56g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

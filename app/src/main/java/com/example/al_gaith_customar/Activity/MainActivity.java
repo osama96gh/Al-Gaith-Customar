@@ -3,23 +3,21 @@ package com.example.al_gaith_customar.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.ImageViewCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.core.widget.ImageViewCompat;
 import android.util.Log;
 import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.navigation.NavigationView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -34,7 +32,6 @@ import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Fragment.AnnouncementFragment;
 import com.example.al_gaith_customar.R;
 import com.example.al_gaith_customar.Utility.GeneralUtility;
-import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +39,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+
+import static com.example.al_gaith_customar.Data.AppData.testMode;
 
 
 public class MainActivity extends AppCompatActivity
@@ -203,18 +201,21 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_massages) {
             Intent intent = new Intent(this, MassagesActivity.class);
             startActivity(intent);
-            // finish();
+            if(testMode)
+                finish();
         } else if (id == R.id.nav_requests) {
 
             Intent intent = new Intent(MainActivity.this, ApplicationActivity.class);
             startActivity(intent);
-            //   finish();
+            if(testMode)
+               finish();
 
         } else if (id == R.id.nav_dates) {
 
             Intent intent = new Intent(MainActivity.this, DatesActivity.class);
             startActivity(intent);
-            //   finish();
+            if(testMode)
+                finish();
 
         } else if (id == R.id.nav_log_out) {
 

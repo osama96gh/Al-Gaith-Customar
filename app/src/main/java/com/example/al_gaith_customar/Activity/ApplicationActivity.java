@@ -1,20 +1,18 @@
 package com.example.al_gaith_customar.Activity;
 
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Data.Application;
 import com.example.al_gaith_customar.Fragment.ApplicationFragment;
 import com.example.al_gaith_customar.R;
-import com.example.al_gaith_customar.Utility.GeneralUtility;
 
 public class ApplicationActivity extends AppCompatActivity implements ApplicationFragment.OnListFragmentInteractionListener {
 

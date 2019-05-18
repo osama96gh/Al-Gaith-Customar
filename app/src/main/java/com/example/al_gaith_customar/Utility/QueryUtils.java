@@ -143,6 +143,7 @@ public final class QueryUtils {
 
             // If the request was successful (response code 200),
             // then read the input stream and parse the response.
+            Log.println(Log.ASSERT, "Response Code",""+ urlConnection.getResponseCode());
             if (urlConnection.getResponseCode() == 200) {
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
@@ -151,9 +152,11 @@ public final class QueryUtils {
                 jsonResponse = readFromStream(inputStream);
 
             } else {
+                Log.println(Log.ASSERT, "Response Code",""+ urlConnection.getResponseCode());
                 Log.println(Log.ASSERT, "Error response code: ", "" + urlConnection.getResponseCode());
             }
         } catch (IOException e) {
+            Log.println(Log.ASSERT, "Response Code",""+ urlConnection.getResponseCode());
             Log.println(Log.ASSERT, LOG_TAG, "Problem retrieving the  JSON results.");
         } finally {
             if (urlConnection != null) {
@@ -181,8 +184,8 @@ public final class QueryUtils {
         InputStream inputStream = null;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setReadTimeout(10000 /* milliseconds */);
-            urlConnection.setConnectTimeout(15000 /* milliseconds */);
+            //urlConnection.setReadTimeout(300000 /* milliseconds */);
+           // urlConnection.setConnectTimeout(30000 /* milliseconds */);
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Authorization", auth);
 //            urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -191,6 +194,8 @@ public final class QueryUtils {
 
             // If the request was successful (response code 200),
             // then read the input stream and parse the response.
+            Log.println(Log.ASSERT, "Response Code",""+ urlConnection.getResponseCode());
+
             if (urlConnection.getResponseCode() == 200) {
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
@@ -202,7 +207,8 @@ public final class QueryUtils {
                 Log.println(Log.ASSERT, "Error response code: ", "" + urlConnection.getResponseCode());
             }
         } catch (IOException e) {
-            Log.println(Log.ASSERT, LOG_TAG, "Problem retrieving the  JSON results.");
+
+            Log.println(Log.ASSERT, "IOException", e.getMessage());
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

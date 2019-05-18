@@ -7,7 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 
@@ -22,7 +22,6 @@ import com.example.al_gaith_customar.Data.ApplicationState;
 import com.example.al_gaith_customar.Data.ApplicationType;
 import com.example.al_gaith_customar.Data.Massage;
 import com.example.al_gaith_customar.Data.Reply;
-import com.example.al_gaith_customar.Utility.QueryUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -34,10 +33,8 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 import static android.content.Context.MODE_PRIVATE;
-import static android.support.constraint.Constraints.TAG;
 
 public class GeneralUtility {
 
@@ -794,7 +791,6 @@ public class GeneralUtility {
 
     public static void subsicribe(final String topic) {
 
-        Log.d(TAG, "Subscribing to weather topic");
         // [START subscribe_topics]
         FirebaseMessaging.getInstance().subscribeToTopic(topic)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -804,7 +800,6 @@ public class GeneralUtility {
                         if (!task.isSuccessful()) {
                             msg = "Fail subscribe to " + topic;
                         }
-                        Log.println(Log.ASSERT, TAG, msg);
                     }
                 });
 

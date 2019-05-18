@@ -2,7 +2,7 @@ package com.example.al_gaith_customar.Activity;
 
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -12,8 +12,6 @@ import com.example.al_gaith_customar.Utility.GeneralUtility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-
-import java.util.ArrayList;
 
 import static com.example.al_gaith_customar.Utility.GeneralUtility.subsicribe;
 

@@ -1,19 +1,29 @@
 package com.example.al_gaith_customar.Activity;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.core.widget.ImageViewCompat;
+
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.util.Log;
+import android.view.SubMenu;
 import android.view.View;
+
+import com.example.al_gaith_customar.Utility.CustomTypefaceSpan;
 import com.google.android.material.navigation.NavigationView;
+
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -29,7 +39,7 @@ import com.daimajia.slider.library.Tricks.ViewPagerEx;
 import com.example.al_gaith_customar.Data.Ads;
 import com.example.al_gaith_customar.Data.Announcement;
 import com.example.al_gaith_customar.Data.AppData;
-import com.example.al_gaith_customar.Fragment.AnnouncementFragment;
+import com.example.al_gaith_customar.Fragments.AnnouncementFragment;
 import com.example.al_gaith_customar.R;
 import com.example.al_gaith_customar.Utility.GeneralUtility;
 
@@ -39,6 +49,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 import static com.example.al_gaith_customar.Data.AppData.testMode;
 
@@ -82,6 +94,22 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         Menu menu = navigationView.getMenu();
 
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem mi = menu.getItem(i);
+
+            //for aapplying a font to subMenu ...
+            SubMenu subMenu = mi.getSubMenu();
+            if (subMenu != null && subMenu.size() > 0) {
+                for (int j = 0; j < subMenu.size(); j++) {
+                    MenuItem subMenuItem = subMenu.getItem(j);
+                    applyFontToMenuItem(subMenuItem);
+                }
+            }
+
+            //the method we have create in activity
+            applyFontToMenuItem(mi);
+        }
+
         // find MenuItem  want to change
         massageItem = menu.findItem(R.id.nav_massages);
         applicationItem = menu.findItem(R.id.nav_requests);
@@ -97,6 +125,7 @@ public class MainActivity extends AppCompatActivity
 
         LoadMyApplication loadMyApplication = new LoadMyApplication();
         loadMyApplication.execute();
+
 
     }
 
@@ -201,20 +230,20 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_massages) {
             Intent intent = new Intent(this, MassagesActivity.class);
             startActivity(intent);
-            if(testMode)
+            if (testMode)
                 finish();
         } else if (id == R.id.nav_requests) {
 
             Intent intent = new Intent(MainActivity.this, ApplicationActivity.class);
             startActivity(intent);
-            if(testMode)
-               finish();
+            if (testMode)
+                finish();
 
         } else if (id == R.id.nav_dates) {
 
             Intent intent = new Intent(MainActivity.this, DatesActivity.class);
             startActivity(intent);
-            if(testMode)
+            if (testMode)
                 finish();
 
         } else if (id == R.id.nav_log_out) {
@@ -224,6 +253,22 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
+        } else if (id == R.id.nav_about) {
+
+
+            Intent intent = new Intent(MainActivity.this, AboutActivity.class);
+            startActivity(intent);
+            if (testMode) {
+                finish();
+            }
+        }else if (id == R.id.nav_notification_record) {
+
+
+            Intent intent = new Intent(MainActivity.this, NotificationRecordActivity.class);
+            startActivity(intent);
+            if (testMode) {
+                finish();
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -258,6 +303,26 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
+    private void applyFontToMenuItem(MenuItem mi) {
+        Typeface font = Typeface.createFromAsset(getAssets(), "tajawal.ttf");
+        SpannableString mNewTitle = new SpannableString(mi.getTitle());
+        mNewTitle.setSpan(new CustomTypefaceSpan("", font), 0, mNewTitle.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        mi.setTitle(mNewTitle);
+    }
+
+    private void applyFontToMenuItem(MenuItem mi, String title) {
+        Typeface font = Typeface.createFromAsset(getAssets(), "tajawal.ttf");
+        SpannableString mNewTitle = new SpannableString(title);
+        mNewTitle.setSpan(new CustomTypefaceSpan("", font), 0, mNewTitle.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        mi.setTitle(mNewTitle);
+    }
+
+    public void sendApplication(View view) {
+        sendNewApplication(5, "طلب كفالة محتاج");
+    }
+
+
     class LoadAppAndMassStat extends AsyncTask<Void, Void, String> {
         @Override
         protected String doInBackground(Void... voids) {
@@ -283,14 +348,19 @@ public class MainActivity extends AppCompatActivity
                 e.printStackTrace();
             }
             if (massage != -1) {
-                massageItem.setTitle("الرسائل " + "(" + massage + ")");
+                applyFontToMenuItem(massageItem, "الرسائل" + " " + "(" + massage + ")");
+                // massageItem.setTitle("الرسائل " + "(" + massage + ")");
             }
             if (application != -1) {
-                applicationItem.setTitle("الطلبات " + "(" + application + ")");
+                applyFontToMenuItem(applicationItem, "الطلبات" + " " + "(" + application + ")");
+
             }
             if (dates != -1) {
-                datesItem.setTitle("المواعيد " + "(" + dates + ")");
+                applyFontToMenuItem(datesItem, "المواعيد" + " " + "(" + dates + ")");
+
             }
+            int badgeCount = massage + application + dates;
+            ShortcutBadger.applyCount(MainActivity.this, badgeCount); //for 1.1.4+
         }
     }
 
@@ -351,6 +421,13 @@ public class MainActivity extends AppCompatActivity
             }
             setAdsSlider(url_maps);
         }
+    }
+
+    void sendNewApplication(int app_id, String app_name) {
+        Intent intent = new Intent(MainActivity.this, NewApplicationActivity.class);
+        intent.putExtra(AppData.APPLICATION_ID_KEY, app_id);
+        intent.putExtra(AppData.APPLICATION_TITLE_KEY, app_name);
+        startActivity(intent);
     }
 
 }

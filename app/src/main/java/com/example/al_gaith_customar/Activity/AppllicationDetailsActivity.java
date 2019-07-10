@@ -162,7 +162,7 @@ public class AppllicationDetailsActivity extends AppCompatActivity {
             for (ApplicationData applicationData : dataList) {
                 if ((applicationData.value != null && !applicationData.value.isEmpty())) {
 
-                    if ((applicationData.field_type.matches("enum") || applicationData.field_type.matches("text"))) {
+                    if ((applicationData.field_type.matches("enum") || applicationData.field_type.matches("text")||applicationData.field_type.matches("number"))) {
                         addTextField(applicationData);
                     } else if (applicationData.field_type.matches("image")) {
                         addImageField(applicationData);

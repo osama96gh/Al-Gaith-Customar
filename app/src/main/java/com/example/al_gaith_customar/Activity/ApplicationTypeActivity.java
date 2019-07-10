@@ -6,11 +6,13 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.View;
 
 import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Data.ApplicationType;
-import com.example.al_gaith_customar.Fragment.ApplicationTypeFragment;
+import com.example.al_gaith_customar.Fragments.ApplicationTypeFragment;
 import com.example.al_gaith_customar.R;
 
 public class ApplicationTypeActivity extends AppCompatActivity implements ApplicationTypeFragment.OnListFragmentInteractionListener {
@@ -41,6 +43,7 @@ public class ApplicationTypeActivity extends AppCompatActivity implements Applic
     public void onListFragmentInteraction(ApplicationType item) {
         Intent intent = new Intent(ApplicationTypeActivity.this, NewApplicationActivity.class);
         intent.putExtra(AppData.APPLICATION_ID_KEY, item.id);
+        Log.println(Log.ASSERT,"id",""+item.id);
         intent.putExtra(AppData.APPLICATION_TITLE_KEY, item.name);
         startActivity(intent);
         finish();
@@ -49,7 +52,7 @@ public class ApplicationTypeActivity extends AppCompatActivity implements Applic
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(this, ApplicationActivity.class);
-        startActivity(intent);
+      //  startActivity(intent);
         finish();
     }
 }

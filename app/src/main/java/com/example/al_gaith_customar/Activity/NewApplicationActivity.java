@@ -432,7 +432,7 @@ public class NewApplicationActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(this, ApplicationActivity.class);
-        startActivity(intent);
+       // startActivity(intent);
         finish();
     }
 
@@ -518,15 +518,17 @@ public class NewApplicationActivity extends AppCompatActivity {
                 String success = GeneralUtility.getSuccessMassage(s);
                 if (success != null) {
                     try {
-
-                        uploadImage(success);
+                        if (imageList.size() > 0) {
+                            uploadImage(success);
+                        } else {
+                            onBackPressed();
+                        }
 
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
-                    // onBackPressed();
                 } else {
                     String errorMassage = GeneralUtility.getErrorMassage(s);
                     if (errorMassage != null) {
@@ -551,6 +553,7 @@ public class NewApplicationActivity extends AppCompatActivity {
         MultipartUploadRequest multipartUploadRequest = new MultipartUploadRequest(NewApplicationActivity.this, AppData.BASIC_URI + "/upload/files");
         for (ImageInfo imageInfo : imageList) {
             multipartUploadRequest.addFileToUpload(imageInfo.path, imageInfo.getKey());
+            Log.println(Log.ASSERT,"imageee",imageInfo.path);
         }
 
         String uploadId = multipartUploadRequest
@@ -564,7 +567,6 @@ public class NewApplicationActivity extends AppCompatActivity {
                     public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
                         Log.println(Log.ASSERT, "resulte", serverResponse.getBodyAsString());
                         super.onCompleted(context, uploadInfo, serverResponse);
-
                         onBackPressed();
                     }
 
@@ -600,22 +602,27 @@ public class NewApplicationActivity extends AppCompatActivity {
         Uri imageUri;
         Bitmap imageBitMap;
         if (resultCode == Activity.RESULT_OK) {
+            for (int i = 0; i < dataList.size(); i++) {
+                if (dataList.get(i).field_id == requestCode) {
+                    dataList.get(i).value = "exist";
 
-                imageUri = data.getData();
-                imageBitMap = GeneralUtility.getImageFromUri(NewApplicationActivity.this, imageUri);
+                }
+            }
+
+            imageUri = data.getData();
+            imageBitMap = GeneralUtility.getImageFromUri(NewApplicationActivity.this, imageUri);
 
             try {
                 File outputDir = this.getCacheDir(); // context being the Activity pointer
 
-                File outputFile = File.createTempFile("osaka", ".jpg", outputDir);
+                File outputFile = File.createTempFile("temp"+requestCode, ".jpg", outputDir);
                 OutputStream outStream = null;
 
                 outStream = new FileOutputStream(outputFile);
                 imageBitMap.compress(Bitmap.CompressFormat.PNG, 85, outStream);
                 outStream.close();
-                Toast.makeText(getApplicationContext(), "Saved" + outputFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
                 imageList.add(new ImageInfo(outputFile.getAbsolutePath(), "" + requestCode));
-                uploadImage("" + requestCode);
+                // uploadImage("" + requestCode);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -642,7 +649,6 @@ public class NewApplicationActivity extends AppCompatActivity {
             ((ImageView) (((LinearLayout) rootView.findViewById(requestCode)).getChildAt(1))).setImageBitmap(imageBitMap);
         }
     }
-
 
     private String getRealPathFromURI(Uri contentURI) {
         String result;

@@ -1,12 +1,15 @@
-package com.example.al_gaith_customar.Fragment;
+package com.example.al_gaith_customar.Fragments;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,10 +38,13 @@ public class ApplicationFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+
     ArrayList<Application> dataList = new ArrayList<>();
     MyApplicationRecyclerViewAdapter myApplicationRecyclerViewAdapter;
     ProgressBar progressBar;
     RadioGroup sortRadioGroup;
+
+    SwipeRefreshLayout swipeRefreshLayout;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -56,6 +62,7 @@ public class ApplicationFragment extends Fragment {
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
         return fragment;
+
     }
 
     @Override
@@ -86,8 +93,15 @@ public class ApplicationFragment extends Fragment {
             recyclerView.setAdapter(myApplicationRecyclerViewAdapter);
         }
 
-        LoadMyApplication loadMyApplication = new LoadMyApplication();
-        loadMyApplication.execute();
+        swipeRefreshLayout = view.findViewById(R.id.pullToRefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+              loadData();
+            }
+        });
+
+      loadData();
         sortRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -119,8 +133,16 @@ public class ApplicationFragment extends Fragment {
         return view;
     }
 
+    public void loadData(){
+        if(myApplicationRecyclerViewAdapter!=null){
 
-    void notifyDataChange() {
+        LoadMyApplication loadMyApplication = new LoadMyApplication();
+            loadMyApplication.execute();
+        }
+    }
+
+
+    public void  notifyDataChange() {
         if (myApplicationRecyclerViewAdapter != null) {
             myApplicationRecyclerViewAdapter.notifyDataSetChanged();
         }
@@ -175,7 +197,8 @@ public class ApplicationFragment extends Fragment {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             progressBar.setVisibility(View.GONE);
-
+            swipeRefreshLayout.setRefreshing(false);
+            dataList.clear();
             for (Application application : GeneralUtility.parseApplication(s)) {
                 dataList.add(application);
             }

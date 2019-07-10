@@ -1,18 +1,22 @@
-package com.example.al_gaith_customar.Fragment;
+package com.example.al_gaith_customar.Fragments;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
-import com.example.al_gaith_customar.Data.Announcement;
 import com.example.al_gaith_customar.Data.AppData;
+import com.example.al_gaith_customar.Data.ApplicationDate;
 import com.example.al_gaith_customar.R;
 import com.example.al_gaith_customar.Utility.GeneralUtility;
 
@@ -24,27 +28,30 @@ import java.util.ArrayList;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class AnnouncementFragment extends Fragment {
+public class AppLicationDateFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    ArrayList<Announcement> dataList = new ArrayList<>();
-    MyAnnouncementRecyclerViewAdapter myAnnouncementRecyclerViewAdapter;
+
+    ArrayList<ApplicationDate> dataList = new ArrayList<>();
+    MyAppLicationDateRecyclerViewAdapter myAppLicationDateRecyclerViewAdapter;
+    ProgressBar progressBar;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public AnnouncementFragment() {
+    public AppLicationDateFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static AnnouncementFragment newInstance(int columnCount) {
-        AnnouncementFragment fragment = new AnnouncementFragment();
+    public static AppLicationDateFragment newInstance(int columnCount) {
+        AppLicationDateFragment fragment = new AppLicationDateFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -63,23 +70,36 @@ public class AnnouncementFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_announcement_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_applicationdate_list, container, false);
+        View recycleView = view.findViewById(R.id.list);
+        progressBar = view.findViewById(R.id.progressBar_load_app_date);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
+        if (recycleView instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            RecyclerView recyclerView = (RecyclerView) recycleView;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            myAnnouncementRecyclerViewAdapter = new MyAnnouncementRecyclerViewAdapter(dataList, mListener);
-            recyclerView.setAdapter(myAnnouncementRecyclerViewAdapter);
+            myAppLicationDateRecyclerViewAdapter = new MyAppLicationDateRecyclerViewAdapter(dataList, mListener);
+            recyclerView.setAdapter(myAppLicationDateRecyclerViewAdapter);
         }
+
+        swipeRefreshLayout = view.findViewById(R.id.pullToRefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                LoadMyApplication loadMyApplication = new LoadMyApplication();
+                loadMyApplication.execute();
+            }
+        });
 
         LoadMyApplication loadMyApplication = new LoadMyApplication();
         loadMyApplication.execute();
+
+
         return view;
     }
 
@@ -113,35 +133,40 @@ public class AnnouncementFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(Announcement item);
+        void onListFragmentInteraction(ApplicationDate item);
     }
 
     class LoadMyApplication extends AsyncTask<Void, Void, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected String doInBackground(Void... voids) {
 
-            return GeneralUtility.getAnnouncementData(getContext(), AppData.authType + AppData.userToken);
+            return GeneralUtility.getMyApplicationsDate(getContext(), AppData.authType + AppData.userToken);
         }
 
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
 
-            for (Announcement announcement : GeneralUtility.parseAnnouncement(s)) {
-                dataList.add(announcement);
+            swipeRefreshLayout.setRefreshing(false);
+            progressBar.setVisibility(View.GONE);
+
+            dataList.clear();
+            for (ApplicationDate applicationDate : GeneralUtility.parseApplicationsDate(s)) {
+                dataList.add(applicationDate);
             }
 
             notifyDataChange();
         }
+    }
 
-        private void notifyDataChange() {
-            if (myAnnouncementRecyclerViewAdapter != null)
-                myAnnouncementRecyclerViewAdapter.notifyDataSetChanged();
-        }
+    private void notifyDataChange() {
+        if (myAppLicationDateRecyclerViewAdapter != null)
+            myAppLicationDateRecyclerViewAdapter.notifyDataSetChanged();
     }
 }

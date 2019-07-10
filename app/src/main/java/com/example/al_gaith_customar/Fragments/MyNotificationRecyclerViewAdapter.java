@@ -1,28 +1,31 @@
-package com.example.al_gaith_customar.Fragment;
+package com.example.al_gaith_customar.Fragments;
 
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.al_gaith_customar.Data.Application;
-import com.example.al_gaith_customar.Fragment.ApplicationFragment.OnListFragmentInteractionListener;
+import com.example.al_gaith_customar.Data.Notification;
+import com.example.al_gaith_customar.Fragments.NotificationFragment.OnListFragmentInteractionListener;
+import com.example.al_gaith_customar.Fragments.dummy.DummyContent.DummyItem;
 import com.example.al_gaith_customar.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
+ * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyApplicationRecyclerViewAdapter extends RecyclerView.Adapter<MyApplicationRecyclerViewAdapter.ViewHolder> {
+public class MyNotificationRecyclerViewAdapter extends RecyclerView.Adapter<MyNotificationRecyclerViewAdapter.ViewHolder> {
 
-    private final ArrayList<Application> mValues;
+    private final List<Notification> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyApplicationRecyclerViewAdapter(ArrayList<Application> items, OnListFragmentInteractionListener listener) {
+    public MyNotificationRecyclerViewAdapter(ArrayList<Notification> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -30,17 +33,16 @@ public class MyApplicationRecyclerViewAdapter extends RecyclerView.Adapter<MyApp
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_application, parent, false);
+                .inflate(R.layout.fragment_notification, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mDateView.setText("" + mValues.get(position).created_at);
-        holder.mContentView.setText("" + mValues.get(position).app_name);
-        holder.mStatusView.setText(mValues.get(position).status);
-        holder.mHaveReplyView.setVisibility(mValues.get(position).isAppHaveReply() ? View.VISIBLE : View.GONE);
+        holder.mIdView.setText(mValues.get(position).title);
+        holder.mContentView.setText(mValues.get(position).text);
+        holder.mDate.setText(mValues.get(position).created_at);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,25 +63,22 @@ public class MyApplicationRecyclerViewAdapter extends RecyclerView.Adapter<MyApp
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mDateView;
+        public final TextView mIdView;
         public final TextView mContentView;
-        public final TextView mStatusView;
-        public final LinearLayout mHaveReplyView;
-        public Application mItem;
-
+        public Notification mItem;
+        public final TextView mDate;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mDateView = (TextView) view.findViewById(R.id.date);
+            mIdView = (TextView) view.findViewById(R.id.item_number);
             mContentView = (TextView) view.findViewById(R.id.content);
-            mStatusView = view.findViewById(R.id.status);
-            mHaveReplyView = view.findViewById(R.id.app_have_reply_ll);
+            mDate = (TextView) view.findViewById(R.id.date);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "' ";
+            return super.toString() + " '" + mContentView.getText() + "'";
         }
     }
 }

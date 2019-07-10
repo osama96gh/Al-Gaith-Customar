@@ -1,4 +1,4 @@
- <resources>
+<resources>
     <string name="app_name">جمعية الغيث</string>
     <string name="title_activity_main">الرئيسية</string>
     <string name="navigation_drawer_open">فتح القائمة الجانبية</string>
@@ -9,12 +9,12 @@
     <string name="action_settings">الإعدادات</string>
     <string name="title_activity_login">تسجيل دخول</string>
     <!-- Strings related to login -->
-    <string name="prompt_user_name">إسم المستخدم(بالإنكليزية)*</string>
+    <string name="prompt_user_name">اسم المستخدم(بالإنكليزية)*</string>
     <string name="prompt_password">كلمة المرور*</string>
     <string name="prompt_password_confirmation">تأكيد كلمة المرور*</string>
     <string name="action_sign_in">تسجيل دخول</string>
     <string name="action_sign_in_short">تسجيل دخول</string>
-    <string name="error_invalid_email">إسم المسخدم غير صالح</string>
+    <string name="error_invalid_email">اسم المسخدم غير صالح</string>
     <string name="error_invalid_password">كلمة المرور قصيرة جدا</string>
     <string name="error_incorrect_password">كلمة المرور غير صحيحة</string>
     <string name="error_field_required">حذا الحقل مطلوب</string>
@@ -24,7 +24,10 @@
     <string name="prompt_personal_photo">الصورة الشخصية</string>
     <string name="prompt_id_photo_behind">صورة الهوية الوجه الخلفي*</string>
     <string name="prompt_id_photo_front">صورة الهوية الوجه الأمامي*</string>
-    <string name="prompt_first_name">الإسم الأول*</string>
+    <string name="prompt_first_name">الاسم الأول*</string>
     <string name="prompt_last_name">الكنية*</string>
+
+    <string name="about_describtion">جمعية الغيث الخيرية</string>
+    <string name="about_us_describtion">شركة الرسالة للتكنولوجيا الرقمية</string>
 
 </resources>

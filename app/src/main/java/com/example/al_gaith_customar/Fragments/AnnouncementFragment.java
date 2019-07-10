@@ -1,4 +1,4 @@
-package com.example.al_gaith_customar.Fragment;
+package com.example.al_gaith_customar.Fragments;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -10,10 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
+import com.example.al_gaith_customar.Data.Announcement;
 import com.example.al_gaith_customar.Data.AppData;
-import com.example.al_gaith_customar.Data.ApplicationType;
 import com.example.al_gaith_customar.R;
 import com.example.al_gaith_customar.Utility.GeneralUtility;
 
@@ -25,29 +24,27 @@ import java.util.ArrayList;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class ApplicationTypeFragment extends Fragment {
+public class AnnouncementFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    ArrayList<ApplicationType> dataList = new ArrayList<>();
-    MyApplicationTypeRecyclerViewAdapter myApplicationTypeRecyclerViewAdapter;
-
-    ProgressBar progressBar;
+    ArrayList<Announcement> dataList = new ArrayList<>();
+    MyAnnouncementRecyclerViewAdapter myAnnouncementRecyclerViewAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public ApplicationTypeFragment() {
+    public AnnouncementFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static ApplicationTypeFragment newInstance(int columnCount) {
-        ApplicationTypeFragment fragment = new ApplicationTypeFragment();
+    public static AnnouncementFragment newInstance(int columnCount) {
+        AnnouncementFragment fragment = new AnnouncementFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -64,25 +61,25 @@ public class ApplicationTypeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_applicationtype_list, container, false);
-        progressBar = view.findViewById(R.id.progressBar_load_app_type);
-        View recycleView = view.findViewById(R.id.list);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_announcement_list, container, false);
+
         // Set the adapter
-        if (recycleView instanceof RecyclerView) {
+        if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) recycleView;
+            RecyclerView recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            myApplicationTypeRecyclerViewAdapter = new MyApplicationTypeRecyclerViewAdapter(dataList, mListener);
-            recyclerView.setAdapter(myApplicationTypeRecyclerViewAdapter);
+            myAnnouncementRecyclerViewAdapter = new MyAnnouncementRecyclerViewAdapter(dataList, mListener);
+            recyclerView.setAdapter(myAnnouncementRecyclerViewAdapter);
         }
 
-        LoadApplicationTypeData loadApplicationTypeData = new LoadApplicationTypeData();
-        loadApplicationTypeData.execute();
+        LoadMyApplication loadMyApplication = new LoadMyApplication();
+        loadMyApplication.execute();
         return view;
     }
 
@@ -104,33 +101,6 @@ public class ApplicationTypeFragment extends Fragment {
         mListener = null;
     }
 
-    class LoadApplicationTypeData extends AsyncTask<Void, Void, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-
-            return GeneralUtility.getApplicationTypeData(getContext(), AppData.authType + AppData.userToken);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            for (ApplicationType applicationType : GeneralUtility.parseApplicationType(s)) {
-                dataList.add(applicationType);
-            }
-            if (myApplicationTypeRecyclerViewAdapter != null) {
-                myApplicationTypeRecyclerViewAdapter.notifyDataSetChanged();
-            }
-            progressBar.setVisibility(View.GONE);
-
-        }
-    }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -143,7 +113,35 @@ public class ApplicationTypeFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(ApplicationType item);
+        void onListFragmentInteraction(Announcement item);
     }
 
+    class LoadMyApplication extends AsyncTask<Void, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+
+            return GeneralUtility.getAnnouncementData(getContext(), AppData.authType + AppData.userToken);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            for (Announcement announcement : GeneralUtility.parseAnnouncement(s)) {
+                dataList.add(announcement);
+            }
+
+            notifyDataChange();
+        }
+
+        private void notifyDataChange() {
+            if (myAnnouncementRecyclerViewAdapter != null)
+                myAnnouncementRecyclerViewAdapter.notifyDataSetChanged();
+        }
+    }
 }

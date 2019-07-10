@@ -14,16 +14,21 @@
         android:elevation="5dp"
         android:indeterminate="true"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@+id/list" />
+        app:layout_constraintTop_toTopOf="@+id/pullToRefresh" />
 
-
-    <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/list"
-        android:name="com.example.al_gaith_customar.Fragment.AppLicationDateFragment"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/pullToRefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="match_parent">
 
-        app:layoutManager="LinearLayoutManager"
-        tools:context=".Fragment.AppLicationDateFragment"
-        tools:listitem="@layout/fragment_applicationdate" />
+        <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/list"
+            android:name="com.example.al_gaith_customar.Fragment.AppLicationDateFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            app:layoutManager="LinearLayoutManager"
+            tools:context=".Fragments.AppLicationDateFragment"
+            tools:listitem="@layout/fragment_applicationdate" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

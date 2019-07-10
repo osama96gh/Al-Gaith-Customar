@@ -45,5 +45,8 @@ dependencies {
     def uploadServiceVersion = "3.5.2"
     implementation "net.gotev:uploadservice:$uploadServiceVersion"
 
+    implementation "me.leolin:ShortcutBadger:1.1.22@aar"
+
 }
 apply plugin: 'com.google.gms.google-services'  // Google Play services Gradle plugin
+

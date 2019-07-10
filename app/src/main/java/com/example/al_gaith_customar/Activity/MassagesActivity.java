@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.example.al_gaith_customar.Data.Massage;
-import com.example.al_gaith_customar.Fragment.MassageFragment;
+import com.example.al_gaith_customar.Fragments.MassageFragment;
 import com.example.al_gaith_customar.R;
 import com.google.gson.Gson;
 

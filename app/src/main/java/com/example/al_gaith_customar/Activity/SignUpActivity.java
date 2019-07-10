@@ -2,28 +2,45 @@ package com.example.al_gaith_customar.Activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.R;
 import com.example.al_gaith_customar.Utility.GeneralUtility;
 
+import net.gotev.uploadservice.MultipartUploadRequest;
+import net.gotev.uploadservice.ServerResponse;
+import net.gotev.uploadservice.UploadInfo;
+import net.gotev.uploadservice.UploadNotificationConfig;
+import net.gotev.uploadservice.UploadServiceBroadcastReceiver;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+
 public class SignUpActivity extends AppCompatActivity {
-    private static final int GALLERY_REQUEST_CODE_ID_FRONT = 11;
-    private static final int GALLERY_REQUEST_CODE_ID_BEHIND = 22;
     private static final int GALLERY_REQUEST_CODE_PERSONAL = 33;
     EditText firstName_et;
     EditText lastName_et;
@@ -38,13 +55,13 @@ public class SignUpActivity extends AppCompatActivity {
     private TextView mErrorContaner;
 
     ImageButton pickPersonalPhoto;
-    String base64Personal="";
-    ImageButton pickIdFrontPhoto;
-    String base64Front="";
-    ImageButton pickIdBehindPhoto;
-    String base64Behind="";
+    boolean containProfilImage = false;
+    ImageInfo profileImageInfo;
+
 
     private UserSignUpTask mSignUpTask = null;
+
+    public static String USER_ID = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +76,7 @@ public class SignUpActivity extends AppCompatActivity {
         mobile_et = findViewById(R.id.sign_up_mobile);
         phon_et = findViewById(R.id.sign_up_phone);
 
-        pickIdFrontPhoto = findViewById(R.id.sign_up_id_image_front);
-        pickIdBehindPhoto = findViewById(R.id.sign_up_id_image_behind);
+
         pickPersonalPhoto = findViewById(R.id.sign_up_personal_image);
 
         mErrorContaner = findViewById(R.id.error_tv);
@@ -96,51 +112,34 @@ public class SignUpActivity extends AppCompatActivity {
 
         if (resultCode == Activity.RESULT_OK)
             switch (requestCode) {
-                case GALLERY_REQUEST_CODE_ID_BEHIND:
-                    //data.getData returns the content URI for the selected Image
-                    imageUri = data.getData();
-                    imageBitMap = GeneralUtility.getImageFromUri(SignUpActivity.this, imageUri);
-                    base64Behind = GeneralUtility.getBase64(imageBitMap);
-                    pickIdBehindPhoto.setImageBitmap(imageBitMap);
-                    pickIdBehindPhoto.setColorFilter(null);
-                    ImageViewCompat.setImageTintList(pickIdBehindPhoto, null);
-
-                    break;
-                case GALLERY_REQUEST_CODE_ID_FRONT:
-                    //data.getData returns the content URI for the selected Image
-                    imageUri = data.getData();
-                    imageBitMap = GeneralUtility.getImageFromUri(SignUpActivity.this, imageUri);
-                    base64Front = GeneralUtility.getBase64(imageBitMap);
-
-                    ImageViewCompat.setImageTintList(pickIdFrontPhoto, null);
-
-                    pickIdFrontPhoto.setImageBitmap(imageBitMap);
-                    pickIdFrontPhoto.setColorFilter(null);
-                    break;
                 case GALLERY_REQUEST_CODE_PERSONAL:
-                    //data.getData return the content URI for the selected Image
 
                     imageUri = data.getData();
                     imageBitMap = GeneralUtility.getImageFromUri(SignUpActivity.this, imageUri);
-                    base64Personal = GeneralUtility.getBase64(imageBitMap);
-                    pickPersonalPhoto.setColorFilter(null);
-                    ImageViewCompat.setImageTintList(pickPersonalPhoto, null);
 
-                    pickPersonalPhoto.setImageBitmap(imageBitMap);
+                    try {
+                        File outputDir = this.getCacheDir(); // context being the Activity pointer
+
+                        File outputFile = File.createTempFile("osaka", ".jpg", outputDir);
+                        OutputStream outStream = null;
+
+                        outStream = new FileOutputStream(outputFile);
+                        imageBitMap.compress(Bitmap.CompressFormat.PNG, 85, outStream);
+                        outStream.close();
+                        profileImageInfo = new ImageInfo(outputFile.getAbsolutePath(), "image-profile");
+                        // uploadImage("" + requestCode);
+                        pickPersonalPhoto.setImageBitmap(imageBitMap);
+                        containProfilImage = true;
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
 
                     break;
             }
     }
 
-    public void pickIdFrontPhoto(View view) {
-        pickImage(GALLERY_REQUEST_CODE_ID_FRONT);
-
-    }
-
-    public void pickIdBehindPhoto(View view) {
-        pickImage(GALLERY_REQUEST_CODE_ID_BEHIND);
-
-    }
 
     void requstReadPermission() {
         ActivityCompat.requestPermissions(SignUpActivity.this,
@@ -193,7 +192,6 @@ public class SignUpActivity extends AppCompatActivity {
             mErrorLayout.setVisibility(View.GONE);
             mProgressLayout.setVisibility(View.VISIBLE);
             super.onPreExecute();
-            Log.println(Log.ASSERT, "id photo", base64Behind + " " + base64Front);
         }
 
         @Override
@@ -209,11 +207,7 @@ public class SignUpActivity extends AppCompatActivity {
                     password_et.getText().toString(),
                     password_conf_et.getText().toString(),
                     mobile_et.getText().toString(),
-                    phon_et.getText().toString(),
-                    base64Personal,
-                    base64Front,
-                    base64Behind
-            );
+                    phon_et.getText().toString());
             return response;
         }
 
@@ -223,10 +217,22 @@ public class SignUpActivity extends AppCompatActivity {
             mProgressLayout.setVisibility(View.GONE);
 
             if (response.matches("no error")) {
-
+//                Intent intent = new Intent(SignUpActivity.this, SplachActivity.class);
+//                startActivity(intent);
+//                finish();
+            if (USER_ID != null&&!USER_ID.isEmpty() && containProfilImage) {
+                    try {
+                        uploadProfileImage(USER_ID);
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                } else {
                     Intent intent = new Intent(SignUpActivity.this, SplachActivity.class);
                     startActivity(intent);
                     finish();
+                }
 
             } else {
                 mErrorLayout.setVisibility(View.VISIBLE);
@@ -236,7 +242,51 @@ public class SignUpActivity extends AppCompatActivity {
 
         @Override
         protected void onCancelled() {
-            Toast.makeText(SignUpActivity.this, "onCancelled", Toast.LENGTH_SHORT).show();
-        }
+         }
     }
+
+    void uploadProfileImage(String user_id) throws MalformedURLException, FileNotFoundException {
+        MultipartUploadRequest multipartUploadRequest = new MultipartUploadRequest(SignUpActivity.this, AppData.BASIC_URI + "/upload/files");
+        multipartUploadRequest.addFileToUpload(profileImageInfo.path, profileImageInfo.getKey());
+
+
+        String uploadId = multipartUploadRequest
+                .setNotificationConfig(new UploadNotificationConfig())
+                .setMaxRetries(2)
+                .addParameter("user_id", user_id)
+                .addParameter("type", "profile")
+                .setDelegate(new UploadServiceBroadcastReceiver() {
+                    @Override
+                    public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
+                        Log.println(Log.ASSERT, "resulte", serverResponse.getBodyAsString());
+                        super.onCompleted(context, uploadInfo, serverResponse);
+                        Log.println(Log.ASSERT, "upload profile result", serverResponse.getBodyAsString());
+                        String imge_url = GeneralUtility.getSuccessMassage(serverResponse.getBodyAsString());
+                        GeneralUtility.saveString(AppData.USER_PHOTO_KEY, imge_url, context);
+
+                        Intent intent = new Intent(SignUpActivity.this, SplachActivity.class);
+                        startActivity(intent);
+                        finish();
+                        //onBackPressed();
+                    }
+
+                    @Override
+                    public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
+                        mErrorLayout.setVisibility(View.VISIBLE);
+                        mErrorContaner.setText("خطأ في رفع صورة المستخدم");
+                        Log.println(Log.ASSERT, "error", serverResponse.getBodyAsString());
+                        super.onError(context, uploadInfo, serverResponse, exception);
+                    }
+
+                    @Override
+                    public void onCancelled(Context context, UploadInfo uploadInfo) {
+                        Log.println(Log.ASSERT, "onCancelled", "" + uploadInfo.getSuccessfullyUploadedFiles().size());
+
+                        super.onCancelled(context, uploadInfo);
+                    }
+                })
+                .startUpload();
+
+    }
+
 }

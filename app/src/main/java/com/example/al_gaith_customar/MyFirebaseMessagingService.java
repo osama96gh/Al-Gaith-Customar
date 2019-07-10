@@ -4,15 +4,26 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
 import android.util.Log;
 
 import com.example.al_gaith_customar.Activity.MainActivity;
+import com.example.al_gaith_customar.Data.AppData;
+import com.example.al_gaith_customar.Utility.GeneralUtility;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Map;
+
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -21,18 +32,26 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.println(Log.ASSERT, "firebase masage", "Message Notification Body: ");
-        String notificationTitle = null, notificationBody = null;
+        String notificationTitle = "no title", notificationBody = "no body";
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.println(Log.ASSERT, "firebase masage", "Message Notification Body: " + remoteMessage.getNotification().getBody());
             notificationTitle = remoteMessage.getNotification().getTitle();
             notificationBody = remoteMessage.getNotification().getBody();
+        } else if (remoteMessage.getData() != null) {
+            Log.println(Log.ASSERT, "firebase masage", "Message data Body: " + remoteMessage.getData().get("body"));
+            Map<String, String> data = remoteMessage.getData();
+            notificationTitle = data.get("title");
+            notificationBody = data.get("body");
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
         sendNotification(notificationTitle, notificationBody);
+
+        LoadAppAndMassStat loadAppAndMassStat = new LoadAppAndMassStat();
+        loadAppAndMassStat.execute();
     }
 
 
@@ -58,7 +77,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
 
-
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -72,6 +90,40 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+
+    class LoadAppAndMassStat extends AsyncTask<Void, Void, String> {
+        @Override
+        protected String doInBackground(Void... voids) {
+            return GeneralUtility.getAppAndMassageData(MyFirebaseMessagingService.this, AppData.authType + AppData.userToken);
+
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+
+            int massage = 0, application = 0, dates = 0;
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(s);
+
+
+                jsonObject = jsonObject.getJSONObject("success");
+
+                massage = jsonObject.getInt("messages");
+                application = jsonObject.getInt("applications");
+                dates = jsonObject.getInt("dates");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            int badgeCount = massage + application + dates;
+            ShortcutBadger.applyCount(getApplicationContext(), badgeCount); //for 1.1.4+
+            Log.println(Log.ASSERT, "tag", "massage resived ... num: " + badgeCount);
+
         }
     }
 }

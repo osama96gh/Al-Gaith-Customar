@@ -1,19 +1,22 @@
-package com.example.al_gaith_customar.Fragment;
+package com.example.al_gaith_customar.Fragments;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.al_gaith_customar.Data.AppData;
-import com.example.al_gaith_customar.Data.ApplicationDate;
+import com.example.al_gaith_customar.Data.Massage;
 import com.example.al_gaith_customar.R;
 import com.example.al_gaith_customar.Utility.GeneralUtility;
 
@@ -25,7 +28,7 @@ import java.util.ArrayList;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class AppLicationDateFragment extends Fragment {
+public class MassageFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -33,21 +36,23 @@ public class AppLicationDateFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
 
-    ArrayList<ApplicationDate> dataList = new ArrayList<>();
-    MyAppLicationDateRecyclerViewAdapter myAppLicationDateRecyclerViewAdapter;
+    ArrayList<Massage> dataList = new ArrayList<>();
+    MyMassageRecyclerViewAdapter myMassageRecyclerViewAdapter;
     ProgressBar progressBar;
+
+    SwipeRefreshLayout swipeRefreshLayout;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public AppLicationDateFragment() {
+    public MassageFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static AppLicationDateFragment newInstance(int columnCount) {
-        AppLicationDateFragment fragment = new AppLicationDateFragment();
+    public static MassageFragment newInstance(int columnCount) {
+        MassageFragment fragment = new MassageFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -66,10 +71,9 @@ public class AppLicationDateFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_applicationdate_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_massage_list, container, false);
         View recycleView = view.findViewById(R.id.list);
-        progressBar = view.findViewById(R.id.progressBar_load_app_date);
-
+        progressBar = view.findViewById(R.id.progressBar_load_massages);
         // Set the adapter
         if (recycleView instanceof RecyclerView) {
             Context context = view.getContext();
@@ -79,12 +83,21 @@ public class AppLicationDateFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            myAppLicationDateRecyclerViewAdapter = new MyAppLicationDateRecyclerViewAdapter(dataList, mListener);
-            recyclerView.setAdapter(myAppLicationDateRecyclerViewAdapter);
+            myMassageRecyclerViewAdapter = new MyMassageRecyclerViewAdapter(dataList, mListener);
+            recyclerView.setAdapter(myMassageRecyclerViewAdapter);
         }
-        LoadMyApplication loadMyApplication = new LoadMyApplication();
-        loadMyApplication.execute();
 
+        swipeRefreshLayout = view.findViewById(R.id.pullToRefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                LoadMyMassages loadMyMassages = new LoadMyMassages();
+                loadMyMassages.execute();
+            }
+        });
+
+        LoadMyMassages loadMyMassages = new LoadMyMassages();
+        loadMyMassages.execute();
         return view;
     }
 
@@ -118,10 +131,10 @@ public class AppLicationDateFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(ApplicationDate item);
+        void onListFragmentInteraction(Massage item);
     }
 
-    class LoadMyApplication extends AsyncTask<Void, Void, String> {
+    class LoadMyMassages extends AsyncTask<Void, Void, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -131,16 +144,17 @@ public class AppLicationDateFragment extends Fragment {
         @Override
         protected String doInBackground(Void... voids) {
 
-            return GeneralUtility.getMyApplicationsDate(getContext(), AppData.authType + AppData.userToken);
+            return GeneralUtility.getMyMassagesData(getContext(), AppData.authType + AppData.userToken);
         }
 
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             progressBar.setVisibility(View.GONE);
-
-            for (ApplicationDate applicationDate : GeneralUtility.parseApplicationsDate(s)) {
-                dataList.add(applicationDate);
+            swipeRefreshLayout.setRefreshing(false);
+            dataList.clear();
+            for (Massage Massage : GeneralUtility.parseMassage(s)) {
+                dataList.add(Massage);
             }
 
             notifyDataChange();
@@ -148,7 +162,7 @@ public class AppLicationDateFragment extends Fragment {
     }
 
     private void notifyDataChange() {
-        if (myAppLicationDateRecyclerViewAdapter != null)
-            myAppLicationDateRecyclerViewAdapter.notifyDataSetChanged();
+        if (myMassageRecyclerViewAdapter != null)
+            myMassageRecyclerViewAdapter.notifyDataSetChanged();
     }
 }

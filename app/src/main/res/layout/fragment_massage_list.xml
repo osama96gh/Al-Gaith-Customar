@@ -13,7 +13,12 @@
         android:elevation="5dp"
         android:indeterminate="true"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@+id/list" />
+        app:layout_constraintTop_toTopOf="@+id/pullToRefresh" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:id="@+id/pullToRefresh"
+        android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -24,6 +29,9 @@
         android:layout_height="match_parent"
 
         app:layoutManager="LinearLayoutManager"
-        tools:context=".Fragment.MassageFragment"
+        tools:context=".Fragments.MassageFragment"
         tools:listitem="@layout/fragment_massage" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

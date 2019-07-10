@@ -1,4 +1,4 @@
-package com.example.al_gaith_customar.Fragment.dummy;
+package com.example.al_gaith_customar.Fragments.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,16 +1,15 @@
-package com.example.al_gaith_customar.Fragment;
+package com.example.al_gaith_customar.Fragments;
 
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.example.al_gaith_customar.Data.Announcement;
-import com.example.al_gaith_customar.Fragment.AnnouncementFragment.OnListFragmentInteractionListener;
-import com.example.al_gaith_customar.Fragment.dummy.DummyContent.DummyItem;
+import com.example.al_gaith_customar.Data.ApplicationDate;
+import com.example.al_gaith_customar.Fragments.AppLicationDateFragment.OnListFragmentInteractionListener;
+import com.example.al_gaith_customar.Fragments.dummy.DummyContent.DummyItem;
 import com.example.al_gaith_customar.R;
 
 import java.util.ArrayList;
@@ -21,12 +20,12 @@ import java.util.List;
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyAnnouncementRecyclerViewAdapter extends RecyclerView.Adapter<MyAnnouncementRecyclerViewAdapter.ViewHolder> {
+public class MyAppLicationDateRecyclerViewAdapter extends RecyclerView.Adapter<MyAppLicationDateRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Announcement> mValues;
+    private final List<ApplicationDate> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyAnnouncementRecyclerViewAdapter(ArrayList<Announcement> items, OnListFragmentInteractionListener listener) {
+    public MyAppLicationDateRecyclerViewAdapter(ArrayList<ApplicationDate> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -34,16 +33,16 @@ public class MyAnnouncementRecyclerViewAdapter extends RecyclerView.Adapter<MyAn
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_announcement, parent, false);
+                .inflate(R.layout.fragment_applicationdate, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText("" + mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).announce);
-        Glide.with(holder.mView.getContext()).load(mValues.get(position).image).into(holder.mImageView);
+        holder.mIdView.setText(mValues.get(position).app_name);
+        holder.mContentView.setText(mValues.get(position).review_date);
+        holder.haveReplyLL.setVisibility(mValues.get(position).isDateHaveReply() ? View.VISIBLE : View.GONE);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,15 +65,15 @@ public class MyAnnouncementRecyclerViewAdapter extends RecyclerView.Adapter<MyAn
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public final ImageView mImageView;
-        public Announcement mItem;
+        public final LinearLayout haveReplyLL;
+        public ApplicationDate mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.item_number);
             mContentView = (TextView) view.findViewById(R.id.content);
-            mImageView = view.findViewById(R.id.announcement_iv);
+            haveReplyLL = view.findViewById(R.id.date_have_reply_ll);
         }
 
         @Override

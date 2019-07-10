@@ -1,4 +1,4 @@
-package com.example.al_gaith_customar.Fragment;
+package com.example.al_gaith_customar.Fragments;
 
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,25 +7,22 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.al_gaith_customar.Data.ApplicationDate;
-import com.example.al_gaith_customar.Fragment.AppLicationDateFragment.OnListFragmentInteractionListener;
-import com.example.al_gaith_customar.Fragment.dummy.DummyContent.DummyItem;
+import com.example.al_gaith_customar.Data.Application;
+import com.example.al_gaith_customar.Fragments.ApplicationFragment.OnListFragmentInteractionListener;
 import com.example.al_gaith_customar.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyAppLicationDateRecyclerViewAdapter extends RecyclerView.Adapter<MyAppLicationDateRecyclerViewAdapter.ViewHolder> {
+public class MyApplicationRecyclerViewAdapter extends RecyclerView.Adapter<MyApplicationRecyclerViewAdapter.ViewHolder> {
 
-    private final List<ApplicationDate> mValues;
+    private final ArrayList<Application> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyAppLicationDateRecyclerViewAdapter(ArrayList<ApplicationDate> items, OnListFragmentInteractionListener listener) {
+    public MyApplicationRecyclerViewAdapter(ArrayList<Application> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -33,16 +30,17 @@ public class MyAppLicationDateRecyclerViewAdapter extends RecyclerView.Adapter<M
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_applicationdate, parent, false);
+                .inflate(R.layout.fragment_application, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).app_name);
-        holder.mContentView.setText(mValues.get(position).review_date);
-        holder.haveReplyLL.setVisibility(mValues.get(position).isDateHaveReply() ? View.VISIBLE : View.GONE);
+        holder.mDateView.setText("" + mValues.get(position).created_at);
+        holder.mContentView.setText("" + mValues.get(position).app_name);
+        holder.mStatusView.setText(mValues.get(position).status);
+        holder.mHaveReplyView.setVisibility(mValues.get(position).isAppHaveReply() ? View.VISIBLE : View.GONE);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,22 +61,25 @@ public class MyAppLicationDateRecyclerViewAdapter extends RecyclerView.Adapter<M
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
+        public final TextView mDateView;
         public final TextView mContentView;
-        public final LinearLayout haveReplyLL;
-        public ApplicationDate mItem;
+        public final TextView mStatusView;
+        public final LinearLayout mHaveReplyView;
+        public Application mItem;
+
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
+            mDateView = (TextView) view.findViewById(R.id.date);
             mContentView = (TextView) view.findViewById(R.id.content);
-            haveReplyLL = view.findViewById(R.id.date_have_reply_ll);
+            mStatusView = view.findViewById(R.id.status);
+            mHaveReplyView = view.findViewById(R.id.app_have_reply_ll);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mContentView.getText() + "' ";
         }
     }
 }

@@ -10,7 +10,7 @@ import android.view.View;
 
 import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Data.ApplicationDate;
-import com.example.al_gaith_customar.Fragment.AppLicationDateFragment;
+import com.example.al_gaith_customar.Fragments.AppLicationDateFragment;
 import com.example.al_gaith_customar.R;
 
 public class DatesActivity extends AppCompatActivity implements AppLicationDateFragment.OnListFragmentInteractionListener {

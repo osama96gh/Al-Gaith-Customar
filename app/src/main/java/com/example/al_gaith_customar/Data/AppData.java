@@ -4,8 +4,9 @@ public class AppData {
     public static final String USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query";
     public static final String PUBLIC_SHARED_PREFERENCE_NAME = "PUBLIC_SHARED_PREFERENCE_NAME";
 
-    public static final String BASIC_URI = "http://asso.alresalah-co.com/api";
-    //public static final String BASIC_URI = "http://192.168.1.7/association/api";
+    //public static final String BASIC_URI = "http://asso.alresalah-co.com/api";
+    public static final String BASIC_URI = "http://192.168.1.7/association/api";
+
     public static final String ASSO_ID = "1";
 
     public static String userToken = null;
@@ -24,5 +25,5 @@ public class AppData {
     public static final String APPLICATION_TITLE_KEY = "APPLICATION_TITLE_KEY";
     public static final String MASSAGE_TYPE_KEY = "MASSAGE_TYPE_KEY";
 
-    public static final boolean testMode = true;
+    public static final boolean testMode = false;
 }

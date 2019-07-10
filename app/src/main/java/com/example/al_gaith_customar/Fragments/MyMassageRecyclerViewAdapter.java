@@ -1,4 +1,4 @@
-package com.example.al_gaith_customar.Fragment;
+package com.example.al_gaith_customar.Fragments;
 
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,8 +8,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.al_gaith_customar.Data.Massage;
-import com.example.al_gaith_customar.Fragment.MassageFragment.OnListFragmentInteractionListener;
-import com.example.al_gaith_customar.Fragment.dummy.DummyContent.DummyItem;
+import com.example.al_gaith_customar.Fragments.MassageFragment.OnListFragmentInteractionListener;
+import com.example.al_gaith_customar.Fragments.dummy.DummyContent.DummyItem;
 import com.example.al_gaith_customar.R;
 
 import java.util.ArrayList;

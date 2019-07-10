@@ -7,10 +7,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
+
 import android.util.Base64;
 import android.util.Log;
 
+import com.example.al_gaith_customar.Activity.SignUpActivity;
 import com.example.al_gaith_customar.Data.Ads;
 import com.example.al_gaith_customar.Data.Announcement;
 import com.example.al_gaith_customar.Data.AppData;
@@ -21,6 +24,7 @@ import com.example.al_gaith_customar.Data.ApplicationField;
 import com.example.al_gaith_customar.Data.ApplicationState;
 import com.example.al_gaith_customar.Data.ApplicationType;
 import com.example.al_gaith_customar.Data.Massage;
+import com.example.al_gaith_customar.Data.Notification;
 import com.example.al_gaith_customar.Data.Reply;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -110,7 +114,8 @@ public class GeneralUtility {
 
         JSONObject baseJsonResponse = null;
         try {
-            baseJsonResponse = new JSONObject(response);
+            if (response != null)
+                baseJsonResponse = new JSONObject(response);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -258,6 +263,19 @@ public class GeneralUtility {
         return response;
     }
 
+    public static String getMyNotificationData(Context context, String auth) {
+        Uri baseUri = Uri.parse(AppData.BASIC_URI + "/notifications/log");
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
+
+
+        String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
+        Log.println(Log.ASSERT, "get notification respon", response);
+
+        String error = "خطأ في الاتصال بالخادم";
+        return response;
+    }
+
     public static String getApplicationTypeData(Context context, String auth) {
         Uri baseUri = Uri.parse(AppData.BASIC_URI + "/send/applications");
         Uri.Builder uriBuilder = baseUri.buildUpon();
@@ -312,6 +330,18 @@ public class GeneralUtility {
         uriBuilder.appendQueryParameter("message", massage);
         String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
         Log.println(Log.ASSERT, "send massage response", response);
+        String result = null;
+        result = getSuccessMassage(response);
+        return result;
+    }
+
+    public static String sendTokenData(Context context, String auth, String firebase_id) {
+        Uri baseUri = Uri.parse("http://192.168.1.7/association/api/get/firebase/id");
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
+        uriBuilder.appendQueryParameter("firebase_id", firebase_id);
+        String response = QueryUtils.fetchData(uriBuilder.toString(), auth);
+        Log.println(Log.ASSERT, "send token", "responce : " + response);
         String result = null;
         result = getSuccessMassage(response);
         return result;
@@ -388,6 +418,7 @@ public class GeneralUtility {
         }
         return appList;
     }
+
     public static ArrayList<Ads> parseAds(String applicationJSON) {
         ArrayList<Ads> appList = new ArrayList<>();
 
@@ -542,6 +573,48 @@ public class GeneralUtility {
         return appList;
     }
 
+    public static ArrayList<Notification> parseNotification(String massageJSON) {
+        ArrayList<Notification> appList = new ArrayList<>();
+
+        JSONObject baseJsonResponse = null;
+        try {
+            baseJsonResponse = new JSONObject(massageJSON);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject contentJsonObject = null;
+        if (baseJsonResponse != null) {
+            try {
+                contentJsonObject = baseJsonResponse.getJSONObject("success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        JSONArray contentJsonArry = null;
+        if (contentJsonObject != null) {
+
+            try {
+                contentJsonArry = contentJsonObject.getJSONArray("notifications");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if (contentJsonArry != null) {
+            Gson gson = new Gson();
+            for (int i = 0; i < contentJsonArry.length(); i++) {
+                try {
+                    Notification notification = gson.fromJson(contentJsonArry.getJSONObject(i).toString(), Notification.class);
+                    appList.add(notification);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return appList;
+    }
+
     public static ArrayList<ApplicationType> parseApplicationType(String applicationTypeJSON) {
         ArrayList<ApplicationType> appList = new ArrayList<>();
 
@@ -679,8 +752,7 @@ public class GeneralUtility {
     }
 
     public static String signUp(Context context, String first, String last, String
-            userName, String password, String password_config, String mobile, String phon, String
-                                        personal, String idFront, String idBehind) {
+            userName, String password, String password_config, String mobile, String phon) {
         Uri baseUri = Uri.parse(AppData.BASIC_URI + "/consumer/register");
         Uri.Builder uriBuilder = baseUri.buildUpon();
         uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
@@ -691,12 +763,10 @@ public class GeneralUtility {
         uriBuilder.appendQueryParameter("c_password", password_config);
         uriBuilder.appendQueryParameter("mobile", mobile);
         uriBuilder.appendQueryParameter("phone", phon);
-        uriBuilder.appendQueryParameter("profile_picture", personal);
-        uriBuilder.appendQueryParameter("id_first_picture", idFront);
-        uriBuilder.appendQueryParameter("id_second_picture", idBehind);
 
-        Log.println(Log.ASSERT, "link length", "" + uriBuilder.toString().length());
         String response = QueryUtils.fetchData(uriBuilder.toString());
+        Log.println(Log.ASSERT, "sineUp info", "" + uriBuilder.toString().length());
+
         String error = "خطأ في الاتصال بالخادم";
 
         JSONObject baseJsonResponse = null;
@@ -713,6 +783,7 @@ public class GeneralUtility {
                 String id = resultJsonObject.getString("username");
                 String photo = resultJsonObject.getString("profile_picture");
 
+                SignUpActivity.USER_ID = resultJsonObject.getString("user_id");
                 saveString(AppData.USER_TOKEN_KEY, token, context);
                 saveString(AppData.USER_ID_KEY, id, context);
                 saveString(AppData.USER_NAME_KEY, name, context);

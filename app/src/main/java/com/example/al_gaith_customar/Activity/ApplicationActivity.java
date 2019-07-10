@@ -11,18 +11,18 @@ import android.view.View;
 
 import com.example.al_gaith_customar.Data.AppData;
 import com.example.al_gaith_customar.Data.Application;
-import com.example.al_gaith_customar.Fragment.ApplicationFragment;
+import com.example.al_gaith_customar.Fragments.ApplicationFragment;
 import com.example.al_gaith_customar.R;
 
 public class ApplicationActivity extends AppCompatActivity implements ApplicationFragment.OnListFragmentInteractionListener {
-
+    ApplicationFragment applicationFragment =ApplicationFragment.newInstance(1);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_application);
 //        SendApplication sendApplication = new SendApplication();
 //        sendApplication.execute();
-        setFragment(ApplicationFragment.newInstance(1));
+        setFragment(applicationFragment);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -35,11 +35,18 @@ public class ApplicationActivity extends AppCompatActivity implements Applicatio
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        applicationFragment.loadData();
+    }
+
     protected void setFragment(Fragment fragment) {
         FragmentTransaction t = getSupportFragmentManager().beginTransaction();
         t.replace(R.id.application_contaner, fragment);
         t.commit();
     }
+
 
     @Override
     public void onListFragmentInteraction(Application item) {
@@ -52,6 +59,6 @@ public class ApplicationActivity extends AppCompatActivity implements Applicatio
     public void newApplication(View view) {
         Intent intent = new Intent(ApplicationActivity.this, ApplicationTypeActivity.class);
         startActivity(intent);
-        finish();
+       // finish();
     }
 }

@@ -2,6 +2,7 @@ package com.example.al_gaith_customar.Activity;
 
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -269,6 +270,14 @@ public class MainActivity extends AppCompatActivity
             if (testMode) {
                 finish();
             }
+        }else if (id == R.id.nav_about_vid) {
+
+
+            Intent intent = new Intent(MainActivity.this, AboutVidioActivity.class);
+            startActivity(intent);
+            if (testMode) {
+                finish();
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -279,7 +288,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onListFragmentInteraction(Announcement item) {
-
+        String phon=item.phone;
+        if (phon!=null&&!phon.isEmpty()) {
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:"+phon));
+            startActivity(intent);
+        }
     }
 
 

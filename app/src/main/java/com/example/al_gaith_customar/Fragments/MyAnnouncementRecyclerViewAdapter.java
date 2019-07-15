@@ -1,6 +1,9 @@
 package com.example.al_gaith_customar.Fragments;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +47,8 @@ public class MyAnnouncementRecyclerViewAdapter extends RecyclerView.Adapter<MyAn
         holder.mIdView.setText("" + mValues.get(position).id);
         holder.mContentView.setText(mValues.get(position).announce);
         Glide.with(holder.mView.getContext()).load(mValues.get(position).image).into(holder.mImageView);
+
+
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

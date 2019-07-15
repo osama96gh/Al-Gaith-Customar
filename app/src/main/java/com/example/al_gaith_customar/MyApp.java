@@ -4,10 +4,12 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.danikula.videocache.HttpProxyCacheServer;
 import com.example.al_gaith_customar.Activity.LoginActivity;
 import com.example.al_gaith_customar.Activity.MainActivity;
 import com.example.al_gaith_customar.Activity.SplachActivity;
@@ -31,6 +33,18 @@ import me.leolin.shortcutbadger.ShortcutBadger;
 import static com.example.al_gaith_customar.Utility.GeneralUtility.subsicribe;
 
 public class MyApp extends Application {
+
+
+    private HttpProxyCacheServer proxy;
+
+    public static HttpProxyCacheServer getProxy(Context context) {
+        MyApp app = (MyApp) context.getApplicationContext();
+        return app.proxy == null ? (app.proxy = app.newProxy()) : app.proxy;
+    }
+
+    private HttpProxyCacheServer newProxy() {
+        return new HttpProxyCacheServer(this);
+    }
 
 
     @Override
@@ -105,6 +119,7 @@ public class MyApp extends Application {
 
         @Override
         protected String doInBackground(Void... voids) {
+            Log.println(Log.ASSERT,"u-id",AppData.authType + AppData.userToken);
             return GeneralUtility.sendTokenData(getApplicationContext(), AppData.authType + AppData.userToken, token);
 
         }

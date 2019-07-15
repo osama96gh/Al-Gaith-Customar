@@ -336,7 +336,7 @@ public class GeneralUtility {
     }
 
     public static String sendTokenData(Context context, String auth, String firebase_id) {
-        Uri baseUri = Uri.parse("http://192.168.1.7/association/api/get/firebase/id");
+        Uri baseUri = Uri.parse(AppData.BASIC_URI+"/get/firebase/id");
         Uri.Builder uriBuilder = baseUri.buildUpon();
         uriBuilder.appendQueryParameter("asso_id", AppData.ASSO_ID);
         uriBuilder.appendQueryParameter("firebase_id", firebase_id);
@@ -656,10 +656,20 @@ public class GeneralUtility {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        JSONArray contentJsonArry = null;
-        if (baseJsonResponse != null) {
+
+        JSONObject baseFiledObject = null;
+        if(baseJsonResponse != null){
             try {
-                contentJsonArry = baseJsonResponse.getJSONArray("success");
+                baseFiledObject =baseJsonResponse.getJSONObject("success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        JSONArray contentJsonArry = null;
+        if (baseFiledObject != null) {
+            try {
+                contentJsonArry = baseFiledObject.getJSONArray("data");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -676,6 +686,37 @@ public class GeneralUtility {
             }
         }
         return appList;
+    }
+
+    public static int parseApplicationStepNumber(String applicationFieldJSON) {
+        ArrayList<ApplicationField> appList = new ArrayList<>();
+
+        JSONObject baseJsonResponse = null;
+        try {
+            baseJsonResponse = new JSONObject(applicationFieldJSON);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject baseFiledObject = null;
+        if(baseJsonResponse != null){
+            try {
+                baseFiledObject =baseJsonResponse.getJSONObject("success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        int stepNum=1 ;
+        if (baseFiledObject != null) {
+            try {
+                stepNum = baseFiledObject.getInt("max_step");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return stepNum;
     }
 
     public static ArrayList<ApplicationData> parseApplicationData(String applicationFieldJSON) {
@@ -695,6 +736,8 @@ public class GeneralUtility {
                 e.printStackTrace();
             }
         }
+
+
         JSONArray contentJsonArry = null;
         if (jsonObject != null) {
             try {

@@ -18,7 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.NotificationRecordActivity"></activity>
+        <activity android:name=".Activity.AboutVidioActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"></activity>
+        <activity android:name=".Activity.NotificationRecordActivity" />
         <activity
             android:name=".Activity.AboutActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

@@ -18,10 +18,13 @@ import com.example.al_gaith_customar.Utility.GeneralUtility;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.Random;
 
 import me.leolin.shortcutbadger.ShortcutBadger;
 
@@ -52,6 +55,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         LoadAppAndMassStat loadAppAndMassStat = new LoadAppAndMassStat();
         loadAppAndMassStat.execute();
+
+        LoadMyGroup loadMyGroup = new LoadMyGroup();
+        loadMyGroup.execute();
     }
 
 
@@ -72,7 +78,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(1, builder.build());
+        final int min = 0;
+        final int max = 1000;
+        final int random = new Random().nextInt((max - min) + 1) + min;
+        notificationManager.notify(random, builder.build());
 
     }
 
@@ -124,6 +133,39 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             ShortcutBadger.applyCount(getApplicationContext(), badgeCount); //for 1.1.4+
             Log.println(Log.ASSERT, "tag", "massage resived ... num: " + badgeCount);
 
+        }
+    }
+
+    class LoadMyGroup extends AsyncTask<Void, Void, String> {
+        @Override
+        protected String doInBackground(Void... voids) {
+            return GeneralUtility.getMyGroupData(getApplicationContext(), AppData.authType + AppData.userToken);
+
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            ArrayList<String> groups = new ArrayList<>();
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(s);
+
+
+                jsonObject = jsonObject.getJSONObject("success");
+
+                JSONArray jsonArray = jsonObject.getJSONArray("groups");
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    groups.add(jsonArray.getString(i));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            for (String group : groups) {
+                Log.println(Log.ASSERT, "main group", group);
+                GeneralUtility.subsicribe(group);
+            }
         }
     }
 }

@@ -5,5 +5,20 @@ public class ApplicationField {
     public String field_name, field_type, positive_value, validation;
     public String[] enum_values;
     public int[] children;
-
+    public int step=1;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

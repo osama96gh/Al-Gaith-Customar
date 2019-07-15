@@ -5,10 +5,12 @@ public class ApplicationData {
     public String value = "";
     public String field_type = "";
     public String field_name;
+    public int step = 1;
 
-    public ApplicationData(int field_id, String type) {
+    public ApplicationData(int field_id, String type, int step) {
         this.field_id = field_id;
         this.field_type = type;
+        this.step = step;
     }
 
     public ApplicationData(int field_id, String type, String value) {

@@ -47,6 +47,11 @@ dependencies {
 
     implementation "me.leolin:ShortcutBadger:1.1.22@aar"
 
+    implementation 'com.airbnb.android:lottie:3.0.7'
+
+    implementation 'com.danikula:videocache:2.7.1'
+
+
 }
 apply plugin: 'com.google.gms.google-services'  // Google Play services Gradle plugin
 

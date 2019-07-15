@@ -84,7 +84,9 @@ public class NewApplicationActivity extends AppCompatActivity {
     Toolbar toolbar;
     ArrayList<ApplicationField> fieldList = new ArrayList<>();
     ArrayList<ApplicationData> dataList = new ArrayList<>();
-
+    int stepNumber = 1;
+    int currentStep = 1;
+    Button done_next_button;
     LinearLayout rootView;
     LinearLayout errorLayout;
     TextView errorTV;
@@ -101,6 +103,7 @@ public class NewApplicationActivity extends AppCompatActivity {
         errorTV = findViewById(R.id.error_tv);
         loadPB = findViewById(R.id.load_progress_pb);
         uploadPB = findViewById(R.id.upload_progress_layout);
+        done_next_button = findViewById(R.id.next_done_button);
 
         appId = getIntent().getIntExtra(AppData.APPLICATION_ID_KEY, 0);
         toolbar = findViewById(R.id.toolbar);
@@ -376,11 +379,22 @@ public class NewApplicationActivity extends AppCompatActivity {
         }
     }
 
+
     public void sendApplication(View view) {
-        SendApplicationData sendApplicationData = new SendApplicationData();
-        sendApplicationData.execute();
+        if (currentStep == stepNumber) {
+            SendApplicationData sendApplicationData = new SendApplicationData();
+            sendApplicationData.execute();
+
+        } else {
+            currentStep++;
+            displayStepField(currentStep);
+            if (currentStep == stepNumber) {
+                done_next_button.setText("تقديم الطلب");
+            }
+        }
 
     }
+
 
     String getTextFromTextInputLayout(TextInputLayout textInputLayout) {
         String value = String.valueOf(textInputLayout.getEditText().getText());
@@ -420,7 +434,7 @@ public class NewApplicationActivity extends AppCompatActivity {
                 for (int j = 0; j < elementCont; j++) {
                     TextInputLayout textInputLayout = (TextInputLayout) mainContainer.getChildAt(j);
                     ApplicationField applicationField = getField(childrenID[j % childrenID.length]);
-                    ApplicationData data = new ApplicationData(applicationField.id, applicationField.field_type);
+                    ApplicationData data = new ApplicationData(applicationField.id, applicationField.field_type, currentStep);
                     data.value = getTextFromTextInputLayout(textInputLayout);
                     Log.println(Log.ASSERT, "text", getTextFromTextInputLayout(textInputLayout));
                     dataList.add(data);
@@ -429,11 +443,58 @@ public class NewApplicationActivity extends AppCompatActivity {
         }
     }
 
+    void displayStepField(int step) {
+        int size = dataList.size();
+        for (int i = 0; i < size; i++) {
+            ApplicationData applicationData = dataList.get(i);
+            View view = rootView.findViewById(applicationData.field_id);
+            if (applicationData.step != step) {
+                view.setVisibility(View.GONE);
+            } else {
+                view.setVisibility(View.VISIBLE);
+            }
+        }
+
+        Log.println(Log.ASSERT, "size", "f : " + fieldList.size());
+        Log.println(Log.ASSERT, "size", "d : " + dataList.size());
+
+//        for (ApplicationField applicationField : fieldList) {
+//            if (applicationField.children != null) {
+//                for (int i : applicationField.children) {
+//                    rootView.findViewById(i).setVisibility(View.GONE);
+//                }
+//            }
+//        }
+
+        for (int i = 0; i < fieldList.size(); i++) {
+            ApplicationField applicationField = fieldList.get(i);
+            ApplicationData applicationData = dataList.get(i);
+            View view = rootView.findViewById(applicationData.field_id);
+
+            if (applicationField.step == step) {
+                if (applicationField.children != null && !(applicationData.value.matches(applicationField.positive_value))) {
+                    for (int j : applicationField.children) {
+                        rootView.findViewById(j).setVisibility(View.GONE);
+                    }
+                }
+            }
+        }
+
+
+    }
+
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, ApplicationActivity.class);
-       // startActivity(intent);
-        finish();
+        if (currentStep == 1) {
+
+            Intent intent = new Intent(this, ApplicationActivity.class);
+            // startActivity(intent);
+            finish();
+        } else {
+            currentStep--;
+            displayStepField(currentStep);
+            done_next_button.setText("التالي");
+        }
     }
 
     String getDataAsJSONArray() {
@@ -470,8 +531,9 @@ public class NewApplicationActivity extends AppCompatActivity {
             loadPB.setVisibility(View.GONE);
 
             fieldList = GeneralUtility.parseApplicationField(s);
+            Log.println(Log.ASSERT, "step number", "" + stepNumber);
             for (ApplicationField applicationField : fieldList) {
-                dataList.add(new ApplicationData(applicationField.id, applicationField.field_type));
+                dataList.add(new ApplicationData(applicationField.id, applicationField.field_type, applicationField.step));
 
                 if (applicationField.field_type.matches("enum")) {
                     addEnumField(applicationField);
@@ -484,12 +546,17 @@ public class NewApplicationActivity extends AppCompatActivity {
                 }
             }
 
-            for (ApplicationField applicationField : fieldList) {
-                if (applicationField.children != null) {
-                    for (int i : applicationField.children) {
-                        rootView.findViewById(i).setVisibility(View.GONE);
-                    }
-                }
+//            for (ApplicationField applicationField : fieldList) {
+//                if (applicationField.children != null) {
+//                    for (int i : applicationField.children) {
+//                        rootView.findViewById(i).setVisibility(View.GONE);
+//                    }
+//                }
+//            }
+            stepNumber = GeneralUtility.parseApplicationStepNumber(s);
+            if (stepNumber > 1) {
+                done_next_button.setText("التالي");
+                displayStepField(1);
             }
         }
     }
@@ -521,7 +588,7 @@ public class NewApplicationActivity extends AppCompatActivity {
                         if (imageList.size() > 0) {
                             uploadImage(success);
                         } else {
-                            onBackPressed();
+                            finish();
                         }
 
                     } catch (MalformedURLException e) {
@@ -553,7 +620,7 @@ public class NewApplicationActivity extends AppCompatActivity {
         MultipartUploadRequest multipartUploadRequest = new MultipartUploadRequest(NewApplicationActivity.this, AppData.BASIC_URI + "/upload/files");
         for (ImageInfo imageInfo : imageList) {
             multipartUploadRequest.addFileToUpload(imageInfo.path, imageInfo.getKey());
-            Log.println(Log.ASSERT,"imageee",imageInfo.path);
+            Log.println(Log.ASSERT, "imageee", imageInfo.path);
         }
 
         String uploadId = multipartUploadRequest
@@ -567,7 +634,7 @@ public class NewApplicationActivity extends AppCompatActivity {
                     public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
                         Log.println(Log.ASSERT, "resulte", serverResponse.getBodyAsString());
                         super.onCompleted(context, uploadInfo, serverResponse);
-                        onBackPressed();
+                        finish();
                     }
 
                     @Override
@@ -615,7 +682,7 @@ public class NewApplicationActivity extends AppCompatActivity {
             try {
                 File outputDir = this.getCacheDir(); // context being the Activity pointer
 
-                File outputFile = File.createTempFile("temp"+requestCode, ".jpg", outputDir);
+                File outputFile = File.createTempFile("temp" + requestCode, ".jpg", outputDir);
                 OutputStream outStream = null;
 
                 outStream = new FileOutputStream(outputFile);
